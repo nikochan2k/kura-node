@@ -1,2 +1,3 @@
 # kura-node
-The FileSystem API abstraction library, Node Plugin
+
+The FileSystem API abstraction library, node plugin.
