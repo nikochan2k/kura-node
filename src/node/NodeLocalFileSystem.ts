@@ -2,13 +2,13 @@ import { AbstractAccessor, AbstractLocalFileSystem } from "kura";
 import { NodeAccessor } from "./NodeAccessor";
 
 export class NodeLocalFileSystem extends AbstractLocalFileSystem {
-  constructor(bucket: string, useIndex: boolean) {
-    super(bucket, useIndex);
+  constructor(private rootDir: string, useIndex = false) {
+    super(useIndex);
   }
 
   protected createAccessor(useIndex: boolean): Promise<AbstractAccessor> {
     return new Promise<NodeAccessor>(resolve => {
-      const accessor = new NodeAccessor(this.bucket, useIndex);
+      const accessor = new NodeAccessor(this.rootDir, useIndex);
       resolve(accessor);
     });
   }

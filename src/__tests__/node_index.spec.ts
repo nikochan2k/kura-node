@@ -1,19 +1,32 @@
+import { mkdirSync, rmdirSync } from "fs";
 import {
   blobToString,
   DirectoryEntryAsync,
+  DIR_SEPARATOR,
   FileSystemAsync,
   InvalidModificationError,
   NotFoundError
 } from "kura";
+import { tmpdir } from "os";
+import { normalize } from "path";
 import { NodeLocalFileSystemAsync } from "../node/NodeLocalFileSystemAsync";
 
 let fs: FileSystemAsync;
 beforeAll(async () => {
-  const bucket = "web-file-system-test";
+  const tempDir = tmpdir();
+  let rootDir = `${tempDir}${DIR_SEPARATOR}web-file-system-index-test`;
+  rootDir = normalize(rootDir);
 
-  // TODO
+  try {
+    rmdirSync(rootDir, { recursive: true });
+  } catch (e) {
+    console.error(e);
+  }
+  try {
+    mkdirSync(rootDir, { recursive: true });
+  } catch (e) {}
 
-  const factory = new NodeLocalFileSystemAsync(bucket, true);
+  const factory = new NodeLocalFileSystemAsync(rootDir, true);
   fs = await factory.requestFileSystemAsync(
     window.PERSISTENT,
     Number.MAX_VALUE
