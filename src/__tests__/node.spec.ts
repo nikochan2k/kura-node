@@ -19,9 +19,7 @@ beforeAll(async () => {
 
   try {
     rmdirSync(rootDir, { recursive: true });
-  } catch (e) {
-    console.error(e);
-  }
+  } catch (e) {}
   try {
     mkdirSync(rootDir, { recursive: true });
   } catch (e) {}
