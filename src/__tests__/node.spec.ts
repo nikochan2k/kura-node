@@ -100,12 +100,8 @@ test("create file in the dir", async done => {
     exclusive: true
   });
   expect(fileEntry.fullPath).toBe("/folder/in.txt");
-  try {
-    await dirEntry.getFile("out.txt");
-    fail();
-  } catch (e) {
-    expect(e).toBeInstanceOf(NotFoundError);
-  }
+  const file = await dirEntry.getFile("out.txt");
+  expect(file).toBeNull();
 
   const parent = await fileEntry.getParent();
   expect(parent.fullPath).toBe(dirEntry.fullPath);
@@ -202,12 +198,8 @@ test("move folder", async done => {
 test("remove a file", async done => {
   const entry = await fs.root.getFile("empty.txt");
   await entry.remove();
-  try {
-    await fs.root.getFile("empty.txt");
-    fail();
-  } catch (e) {
-    expect(e).toBeInstanceOf(NotFoundError);
-  }
+  const file = await fs.root.getFile("empty.txt");
+  expect(file).toBeNull();
 
   const reader = fs.root.createReader();
   const entries = await reader.readEntries();
