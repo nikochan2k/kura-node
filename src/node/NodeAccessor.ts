@@ -15,7 +15,8 @@ import {
   FileSystem,
   FileSystemObject,
   INDEX_FILE_NAME,
-  InvalidModificationError
+  InvalidModificationError,
+  Permission
 } from "kura";
 import { normalize } from "path";
 import { NodeFileSystem } from "./NodeFileSystem";
@@ -34,13 +35,13 @@ export class NodeAccessor extends AbstractAccessor {
   filesystem: FileSystem;
   name: string;
 
-  constructor(private rootDir: string, useIndex = false) {
-    super(useIndex);
+  constructor(private rootDir: string, permission: Permission) {
+    super(permission);
     this.filesystem = new NodeFileSystem(this);
     this.name = rootDir;
   }
 
-  async getContent(fullPath: string): Promise<Blob> {
+  async doGetContent(fullPath: string): Promise<Blob> {
     try {
       const path = this.getPath(fullPath);
       const b = readFileSync(path);
@@ -53,7 +54,7 @@ export class NodeAccessor extends AbstractAccessor {
     }
   }
 
-  async getObject(fullPath: string): Promise<FileSystemObject> {
+  async doGetObject(fullPath: string): Promise<FileSystemObject> {
     const path = this.getPath(fullPath);
     try {
       const stats = statSync(path);

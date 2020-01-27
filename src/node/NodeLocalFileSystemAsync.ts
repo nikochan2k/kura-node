@@ -1,8 +1,11 @@
-import { LocalFileSystemAsync } from "kura";
+import { LocalFileSystemAsync, Permission } from "kura";
 import { NodeLocalFileSystem } from "./NodeLocalFileSystem";
 
 export class NodeLocalFileSystemAsync extends LocalFileSystemAsync {
-  constructor(bucket: string, useIndex?: boolean) {
-    super(new NodeLocalFileSystem(bucket, useIndex));
+  constructor(rootDir: string);
+  constructor(rootDir: string, useIndex: boolean);
+  constructor(rootDir: string, permission: Permission);
+  constructor(rootDir: string, config?: any) {
+    super(new NodeLocalFileSystem(rootDir, config));
   }
 }
