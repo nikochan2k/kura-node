@@ -4,8 +4,7 @@ import {
   DirectoryEntryAsync,
   DIR_SEPARATOR,
   FileSystemAsync,
-  InvalidModificationError,
-  NotFoundError
+  InvalidModificationError
 } from "kura";
 import { tmpdir } from "os";
 import { normalize } from "path";
@@ -54,7 +53,7 @@ test("add text file", async done => {
   expect(fileEntry.isFile).toBe(true);
 
   let writer = await fileEntry.createWriter();
-  await writer.write(new Blob(["hoge"], { type: "text/plain" }));
+  await writer.writeFile(new Blob(["hoge"], { type: "text/plain" }));
   expect(writer.position).toBe(4);
   let file = await fileEntry.file();
   expect(file.size).toBe(4);
