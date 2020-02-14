@@ -5,12 +5,10 @@ import {
   rmdirSync,
   statSync,
   unlinkSync,
-  writeFileSync,
-  readlinkSync
+  writeFileSync
 } from "fs";
 import {
   AbstractAccessor,
-  blobToArrayBuffer,
   DIR_SEPARATOR,
   FileSystem,
   FileSystemObject,
@@ -22,6 +20,22 @@ import { normalize } from "path";
 import { NodeFileSystem } from "./NodeFileSystem";
 
 const EMPTY_BUFFER = Buffer.from("");
+
+export async function blobToArrayBuffer(blob: Blob) {
+  return new Promise<ArrayBuffer>(resolve => {
+    if (!blob || blob.size === 0) {
+      resolve(new ArrayBuffer(0));
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onloadend = function() {
+      const buffer = reader.result as ArrayBuffer;
+      resolve(buffer);
+    };
+    reader.readAsArrayBuffer(blob);
+  });
+}
 
 function handleError(e: any) {
   const err = e as NodeJS.ErrnoException;
