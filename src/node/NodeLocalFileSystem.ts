@@ -1,7 +1,10 @@
-import { AbstractAccessor, AbstractLocalFileSystem, Permission } from "kura";
+import {
+  AbstractAccessor,
+  AbstractLocalFileSystem,
+  LAST_DIR_SEPARATORS,
+  Permission
+} from "kura";
 import { NodeAccessor } from "./NodeAccessor";
-
-const LAST_SLASH = /\/+$/.compile();
 
 export class NodeLocalFileSystem extends AbstractLocalFileSystem {
   private rootDir: string;
@@ -11,7 +14,7 @@ export class NodeLocalFileSystem extends AbstractLocalFileSystem {
   constructor(rootDir: string, permission: Permission);
   constructor(rootDir: string, config?: any) {
     super(config);
-    rootDir = rootDir.replace(LAST_SLASH, "");
+    rootDir = rootDir.replace(LAST_DIR_SEPARATORS, "");
     this.rootDir = rootDir;
   }
 
