@@ -6,6 +6,7 @@ import {
   FileSystemObject,
   FileSystemParams
 } from "kura";
+import { pathToFileURL } from "url";
 import { NodeAccessor } from "./NodeAccessor";
 import { NodeDirectoryReader } from "./NodeDirectoryReader";
 import { NodeFileEntry } from "./NodeFileEntry";
@@ -19,14 +20,20 @@ export class NodeDirectoryEntry extends AbstractDirectoryEntry<NodeAccessor> {
     return new NodeDirectoryReader(this);
   }
 
-  toDirectoryEntry(obj: FileSystemObject): DirectoryEntry {
+  toURL() {
+    const path = this.params.accessor.getPath(this.fullPath);
+    const url = pathToFileURL(path);
+    return url.toString();
+  }
+
+  protected toDirectoryEntry(obj: FileSystemObject): DirectoryEntry {
     return new NodeDirectoryEntry({
       accessor: this.params.accessor,
       ...obj
     });
   }
 
-  toFileEntry(obj: FileSystemObject): FileEntry {
+  protected toFileEntry(obj: FileSystemObject): FileEntry {
     return new NodeFileEntry({
       accessor: this.params.accessor,
       ...obj

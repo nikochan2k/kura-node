@@ -2228,10 +2228,10 @@ kleur@^3.0.3:
   resolved "https://registry.yarnpkg.com/kleur/-/kleur-3.0.3.tgz#a79c9ecc86ee1ce3fa6206d1216c501f147fc07e"
   integrity sha512-eTIzlVOSUR+JxdDFepEYcBMtZ9Qqdef+rnzWdRZuMbOywu5tO2w2N7rqjoANZ5k9vywhL6Br1VRjUIgTQx4E8w==
 
-kura@^0.1.46:
-  version "0.1.46"
-  resolved "https://registry.yarnpkg.com/kura/-/kura-0.1.46.tgz#f411f52c3472e1747b51ea769056263a2fe3c6cb"
-  integrity sha512-5u5zJ9Ps0OIl+ojRFDY9vmAUqtJKAnMPHcxPC0c8iSZAtTExEi+mXczciJi5+eDyCfciife4TRdpLb4yFZFnVA==
+kura@^0.1.51:
+  version "0.1.51"
+  resolved "https://registry.yarnpkg.com/kura/-/kura-0.1.51.tgz#910bbac72a663757e00929a7aba8a9355159ced0"
+  integrity sha512-aOTSNHVHfSF8o+nrkaIyN7shfgIww+bEd9nbHcgukv8fZYN7Fmdn1/bw630BsccZBuMDdt9N5+iHWlizjvXN+w==
   dependencies:
     base-64 "^0.1.0"
 

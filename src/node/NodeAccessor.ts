@@ -22,7 +22,7 @@ import { NodeFileSystem } from "./NodeFileSystem";
 
 const EMPTY_BUFFER = Buffer.from("");
 
-export async function blobToArrayBuffer(blob: Blob) {
+async function blobToArrayBuffer(blob: Blob) {
   return new Promise<ArrayBuffer>(resolve => {
     if (!blob || blob.size === 0) {
       resolve(new ArrayBuffer(0));
@@ -56,33 +56,10 @@ export class NodeAccessor extends AbstractAccessor {
     this.name = rootDir;
   }
 
-  async doGetContent(fullPath: string): Promise<Blob> {
-    try {
-      const path = this.getPath(fullPath);
-      const b = readFileSync(path);
-      const ab = b.buffer.slice(b.byteOffset, b.byteOffset + b.byteLength);
-      const blob = new Blob([ab]);
-      return blob;
-    } catch (e) {
-      handleError(e);
-      return null;
-    }
-  }
-
-  async doGetObject(fullPath: string): Promise<FileSystemObject> {
-    const path = this.getPath(fullPath);
-    try {
-      const stats = statSync(path);
-      return {
-        fullPath: fullPath,
-        name: fullPath.split(DIR_SEPARATOR).pop(),
-        lastModified: stats.mtime.getTime(),
-        size: stats.isFile() ? stats.size : undefined
-      };
-    } catch (e) {
-      handleError(e);
-      return null;
-    }
+  getPath(fullPath: string) {
+    let path = `${this.rootDir}${fullPath}`;
+    path = normalize(path);
+    return path;
   }
 
   async hasChild(fullPath: string) {
@@ -94,6 +71,15 @@ export class NodeAccessor extends AbstractAccessor {
       handleError(e);
       return false;
     }
+  }
+
+  async resetObject(fullPath: string, size?: number) {
+    const obj = await this.doGetObject(fullPath);
+    if (!obj) {
+      return null;
+    }
+    await this.putObject(obj);
+    return obj;
   }
 
   protected async doDelete(fullPath: string, isFile: boolean) {
@@ -119,6 +105,35 @@ export class NodeAccessor extends AbstractAccessor {
       }
     } catch (e) {
       handleError(e);
+    }
+  }
+
+  protected async doGetContent(fullPath: string): Promise<Blob> {
+    try {
+      const path = this.getPath(fullPath);
+      const b = readFileSync(path);
+      const ab = b.buffer.slice(b.byteOffset, b.byteOffset + b.byteLength);
+      const blob = new Blob([ab]);
+      return blob;
+    } catch (e) {
+      handleError(e);
+      return null;
+    }
+  }
+
+  protected async doGetObject(fullPath: string): Promise<FileSystemObject> {
+    const path = this.getPath(fullPath);
+    try {
+      const stats = statSync(path);
+      return {
+        fullPath: fullPath,
+        name: fullPath.split(DIR_SEPARATOR).pop(),
+        lastModified: stats.mtime.getTime(),
+        size: stats.isFile() ? stats.size : undefined
+      };
+    } catch (e) {
+      handleError(e);
+      return null;
     }
   }
 
@@ -154,11 +169,5 @@ export class NodeAccessor extends AbstractAccessor {
     } else {
       writeFileSync(path, EMPTY_BUFFER);
     }
-  }
-
-  private getPath(fullPath: string) {
-    let path = `${this.rootDir}${fullPath}`;
-    path = normalize(path);
-    return path;
   }
 }
