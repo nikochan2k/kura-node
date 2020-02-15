@@ -9,6 +9,7 @@ import {
 } from "fs";
 import {
   AbstractAccessor,
+  createPath,
   DIR_SEPARATOR,
   FileSystem,
   FileSystemObject,
@@ -121,16 +122,17 @@ export class NodeAccessor extends AbstractAccessor {
     }
   }
 
-  protected async doGetObjects(fullPath: string): Promise<FileSystemObject[]> {
-    const readdirPath = this.getPath(fullPath);
+  protected async doGetObjects(dirPath: string): Promise<FileSystemObject[]> {
+    const readdirPath = this.getPath(dirPath);
     const names = readdirSync(readdirPath);
     const objects: FileSystemObject[] = [];
     for (const name of names) {
       let statPath = `${readdirPath}${DIR_SEPARATOR}${name}`;
       statPath = normalize(statPath);
       const stats = statSync(statPath);
+      const fullPath = createPath(dirPath, name);
       objects.push({
-        fullPath: `${fullPath}${DIR_SEPARATOR}${name}`,
+        fullPath: fullPath,
         name: name,
         lastModified: stats.mtime.getTime(),
         size: stats.isFile() ? stats.size : undefined
