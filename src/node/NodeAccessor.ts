@@ -163,11 +163,11 @@ export class NodeAccessor extends AbstractAccessor {
   }
 
   protected async doPutObject(obj: FileSystemObject) {
-    const path = this.getPath(obj.fullPath);
-    if (obj.size == null) {
-      mkdirSync(path);
-    } else {
-      writeFileSync(path, EMPTY_BUFFER);
+    if (obj.size != null) {
+      return;
     }
+
+    const path = this.getPath(obj.fullPath);
+    mkdirSync(path);
   }
 }
