@@ -13,14 +13,11 @@ import {
   DIR_SEPARATOR,
   FileSystem,
   FileSystemObject,
-  INDEX_FILE_NAME,
   InvalidModificationError,
   Permission
 } from "kura";
 import { normalize } from "path";
 import { NodeFileSystem } from "./NodeFileSystem";
-
-const EMPTY_BUFFER = Buffer.from("");
 
 async function blobToArrayBuffer(blob: Blob) {
   return new Promise<ArrayBuffer>(resolve => {
@@ -92,10 +89,6 @@ export class NodeAccessor extends AbstractAccessor {
         if (names.length === 0) {
           rmdirSync(path);
         } else {
-          const index = names.pop();
-          if (names.length === 0 && index === INDEX_FILE_NAME) {
-            return;
-          }
           throw new InvalidModificationError(
             this.name,
             fullPath,
