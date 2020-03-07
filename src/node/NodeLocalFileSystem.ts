@@ -1,7 +1,7 @@
 import {
   AbstractAccessor,
   AbstractLocalFileSystem,
-  LAST_DIR_SEPARATORS,
+  normalizePath,
   Permission
 } from "kura";
 import { NodeAccessor } from "./NodeAccessor";
@@ -14,8 +14,7 @@ export class NodeLocalFileSystem extends AbstractLocalFileSystem {
   constructor(rootDir: string, permission: Permission);
   constructor(rootDir: string, config?: any) {
     super(config);
-    rootDir = rootDir.replace(LAST_DIR_SEPARATORS, "");
-    this.rootDir = rootDir;
+    this.rootDir = normalizePath(rootDir);
   }
 
   protected createAccessor(): Promise<AbstractAccessor> {
