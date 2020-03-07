@@ -9,12 +9,12 @@ import {
 } from "fs";
 import {
   AbstractAccessor,
-  createPath,
   DIR_SEPARATOR,
   FileSystem,
   FileSystemObject,
   InvalidModificationError,
-  Permission
+  Permission,
+  normalizePath
 } from "kura";
 import { normalize } from "path";
 import { NodeFileSystem } from "./NodeFileSystem";
@@ -138,7 +138,7 @@ export class NodeAccessor extends AbstractAccessor {
       let statPath = `${readdirPath}${DIR_SEPARATOR}${name}`;
       statPath = normalize(statPath);
       const stats = statSync(statPath);
-      const fullPath = createPath(dirPath, name);
+      const fullPath = normalizePath(dirPath + DIR_SEPARATOR + name);
       objects.push({
         fullPath: fullPath,
         name: name,
