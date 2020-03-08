@@ -13,9 +13,9 @@ import {
   FileSystem,
   FileSystemObject,
   InvalidModificationError,
-  Permission,
   normalizePath
 } from "kura";
+import { FileSystemOptions } from "kura/lib/FileSystemOptions";
 import { normalize } from "path";
 import { NodeFileSystem } from "./NodeFileSystem";
 
@@ -47,8 +47,8 @@ export class NodeAccessor extends AbstractAccessor {
   filesystem: FileSystem;
   name: string;
 
-  constructor(private rootDir: string, permission: Permission) {
-    super(permission);
+  constructor(private rootDir: string, options: FileSystemOptions) {
+    super(options);
     this.filesystem = new NodeFileSystem(this);
     this.name = rootDir;
   }

@@ -15,5 +15,8 @@ try {
   mkdirSync(rootDir, { recursive: true });
 } catch (e) {}
 
-const factory = new NodeLocalFileSystemAsync(rootDir, true);
+const factory = new NodeLocalFileSystemAsync(rootDir, {
+  useIndex: true,
+  verbose: true
+});
 testAll(factory);
