@@ -1,7 +1,8 @@
 import { mkdirSync, rmdirSync } from "fs";
-import { DIR_SEPARATOR, testAll } from "kura";
+import { DIR_SEPARATOR } from "kura";
 import { tmpdir } from "os";
 import { normalize } from "path";
+import { testAll } from "../../node_modules/kura/lib/__tests__/filesystem";
 import { NodeLocalFileSystemAsync } from "../node/NodeLocalFileSystemAsync";
 
 const tempDir = tmpdir();
