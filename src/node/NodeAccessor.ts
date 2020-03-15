@@ -5,7 +5,8 @@ import {
   rmdirSync,
   statSync,
   unlinkSync,
-  writeFileSync
+  writeFileSync,
+  Stats
 } from "fs";
 import {
   AbstractAccessor,
@@ -45,6 +46,12 @@ export class NodeAccessor extends AbstractAccessor {
     super(options);
     this.filesystem = new NodeFileSystem(this);
     this.name = rootDir;
+  }
+
+  getPath(fullPath: string) {
+    let path = `${this.rootDir}${fullPath}`;
+    path = normalize(path);
+    return path;
   }
 
   protected async doDelete(fullPath: string, isFile: boolean) {
@@ -115,13 +122,22 @@ export class NodeAccessor extends AbstractAccessor {
     for (const name of names) {
       let statPath = `${readdirPath}${DIR_SEPARATOR}${name}`;
       statPath = normalize(statPath);
-      const stat = statSync(statPath);
+      let stats: Stats;
+      try {
+        stats = statSync(statPath);
+      } catch (e) {
+        const err = e as NodeJS.ErrnoException;
+        if (err.code === "ENOENT") {
+          throw new NotFoundError(this.name, statPath, e);
+        }
+        throw new NotReadableError(this.name, statPath, e);
+      }
       const fullPath = normalizePath(dirPath + DIR_SEPARATOR + name);
       objects.push({
         fullPath: fullPath,
         name: name,
-        lastModified: stat.mtime.getTime(),
-        size: stat.isFile() ? stat.size : undefined
+        lastModified: stats.mtime.getTime(),
+        size: stats.isFile() ? stats.size : undefined
       });
     }
     return objects;
@@ -148,11 +164,5 @@ export class NodeAccessor extends AbstractAccessor {
     } catch (e) {
       throw new InvalidModificationError(this.name, obj.fullPath, e);
     }
-  }
-
-  private getPath(fullPath: string) {
-    let path = `${this.rootDir}${fullPath}`;
-    path = normalize(path);
-    return path;
   }
 }
