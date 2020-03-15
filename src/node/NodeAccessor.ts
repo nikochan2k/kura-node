@@ -128,9 +128,11 @@ export class NodeAccessor extends AbstractAccessor {
       } catch (e) {
         const err = e as NodeJS.ErrnoException;
         if (err.code === "ENOENT") {
-          throw new NotFoundError(this.name, statPath, e);
+          console.warn(e);
+          continue;
+        } else {
+          throw new NotReadableError(this.name, statPath, e);
         }
-        throw new NotReadableError(this.name, statPath, e);
       }
       const fullPath = normalizePath(dirPath + DIR_SEPARATOR + name);
       objects.push({
@@ -149,6 +151,10 @@ export class NodeAccessor extends AbstractAccessor {
     try {
       writeFileSync(path, Buffer.from(buffer));
     } catch (e) {
+      const err = e as NodeJS.ErrnoException;
+      if (err.code === "ENOENT") {
+        throw new NotFoundError(this.name, fullPath, e);
+      }
       throw new InvalidModificationError(this.name, fullPath, e);
     }
   }
@@ -162,6 +168,10 @@ export class NodeAccessor extends AbstractAccessor {
     try {
       mkdirSync(path);
     } catch (e) {
+      const err = e as NodeJS.ErrnoException;
+      if (err.code === "ENOENT") {
+        throw new NotFoundError(this.name, obj.fullPath, e);
+      }
       throw new InvalidModificationError(this.name, obj.fullPath, e);
     }
   }
