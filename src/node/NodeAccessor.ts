@@ -3,10 +3,10 @@ import {
   readdirSync,
   readFileSync,
   rmdirSync,
+  Stats,
   statSync,
   unlinkSync,
-  writeFileSync,
-  Stats
+  writeFileSync
 } from "fs";
 import {
   AbstractAccessor,
@@ -54,7 +54,7 @@ export class NodeAccessor extends AbstractAccessor {
     return path;
   }
 
-  protected async doDelete(fullPath: string, isFile: boolean) {
+  async doDelete(fullPath: string, isFile: boolean) {
     const path = this.getPath(fullPath);
     try {
       if (isFile) {
@@ -71,7 +71,7 @@ export class NodeAccessor extends AbstractAccessor {
     }
   }
 
-  protected async doGetContent(fullPath: string): Promise<Blob> {
+  async doGetContent(fullPath: string): Promise<Blob> {
     const path = this.getPath(fullPath);
     try {
       const b = readFileSync(path);
@@ -87,7 +87,7 @@ export class NodeAccessor extends AbstractAccessor {
     }
   }
 
-  protected async doGetObject(fullPath: string): Promise<FileSystemObject> {
+  async doGetObject(fullPath: string): Promise<FileSystemObject> {
     const path = this.getPath(fullPath);
     try {
       const stats = statSync(path);
@@ -106,7 +106,7 @@ export class NodeAccessor extends AbstractAccessor {
     }
   }
 
-  protected async doGetObjects(dirPath: string): Promise<FileSystemObject[]> {
+  async doGetObjects(dirPath: string): Promise<FileSystemObject[]> {
     const readdirPath = this.getPath(dirPath);
     let names: string[];
     try {
@@ -145,7 +145,7 @@ export class NodeAccessor extends AbstractAccessor {
     return objects;
   }
 
-  protected async doPutContent(fullPath: string, content: Blob) {
+  async doPutContent(fullPath: string, content: Blob) {
     const path = this.getPath(fullPath);
     const buffer = await blobToArrayBuffer(content);
     try {
@@ -159,7 +159,7 @@ export class NodeAccessor extends AbstractAccessor {
     }
   }
 
-  protected async doPutObject(obj: FileSystemObject) {
+  async doPutObject(obj: FileSystemObject) {
     if (obj.size != null) {
       return;
     }
@@ -168,10 +168,10 @@ export class NodeAccessor extends AbstractAccessor {
     try {
       mkdirSync(path);
     } catch (e) {
-      const err = e as NodeJS.ErrnoException;
-      if (err.code === "ENOENT") {
-        throw new NotFoundError(this.name, obj.fullPath, e);
-      }
+      try {
+        statSync(path); // Already exists
+        return;
+      } catch {}
       throw new InvalidModificationError(this.name, obj.fullPath, e);
     }
   }
