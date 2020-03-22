@@ -44,6 +44,11 @@ export class NodeAccessor extends AbstractAccessor {
 
   constructor(private rootDir: string, options: FileSystemOptions) {
     super(options);
+    try {
+      statSync(rootDir);
+    } catch {
+      mkdirSync(rootDir);
+    }
     this.filesystem = new NodeFileSystem(this);
     this.name = rootDir;
   }

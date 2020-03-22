@@ -11,10 +11,7 @@ rootDir = normalize(rootDir);
 
 try {
   rmdirSync(rootDir, { recursive: true });
-} catch (e) {}
-try {
-  mkdirSync(rootDir, { recursive: true });
-} catch (e) {}
+} catch {}
 
 const factory = new NodeLocalFileSystemAsync(rootDir, { verbose: true });
 testAll(factory);
