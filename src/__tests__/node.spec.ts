@@ -1,4 +1,4 @@
-import { mkdirSync, rmdirSync } from "fs";
+import { rmdirSync } from "fs";
 import { DIR_SEPARATOR } from "kura";
 import { testAll } from "kura/lib/__tests__/filesystem";
 import { tmpdir } from "os";
@@ -13,5 +13,8 @@ try {
   rmdirSync(rootDir, { recursive: true });
 } catch {}
 
-const factory = new NodeLocalFileSystemAsync(rootDir, { verbose: true });
+const factory = new NodeLocalFileSystemAsync(rootDir, {
+  verbose: true,
+  indexWriteDelayMillis: 0,
+});
 testAll(factory);
