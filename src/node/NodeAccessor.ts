@@ -6,37 +6,22 @@ import {
   Stats,
   statSync,
   unlinkSync,
-  writeFileSync
+  writeFileSync,
 } from "fs";
 import {
   AbstractAccessor,
+  base64ToArrayBuffer,
+  blobToArrayBuffer,
   DIR_SEPARATOR,
   FileSystem,
   FileSystemObject,
   InvalidModificationError,
-  normalizePath,
   NotFoundError,
-  NotReadableError
+  NotReadableError,
 } from "kura";
 import { FileSystemOptions } from "kura/lib/FileSystemOptions";
 import { normalize } from "path";
 import { NodeFileSystem } from "./NodeFileSystem";
-
-async function blobToArrayBuffer(blob: Blob) {
-  return new Promise<ArrayBuffer>(resolve => {
-    if (!blob || blob.size === 0) {
-      resolve(new ArrayBuffer(0));
-      return;
-    }
-
-    const reader = new FileReader();
-    reader.onloadend = function() {
-      const buffer = reader.result as ArrayBuffer;
-      resolve(buffer);
-    };
-    reader.readAsArrayBuffer(blob);
-  });
-}
 
 export class NodeAccessor extends AbstractAccessor {
   filesystem: FileSystem;
@@ -51,12 +36,6 @@ export class NodeAccessor extends AbstractAccessor {
     }
     this.filesystem = new NodeFileSystem(this);
     this.name = rootDir;
-  }
-
-  getPath(fullPath: string) {
-    let path = `${this.rootDir}${fullPath}`;
-    path = normalize(path);
-    return path;
   }
 
   async doDelete(fullPath: string, isFile: boolean) {
@@ -76,13 +55,11 @@ export class NodeAccessor extends AbstractAccessor {
     }
   }
 
-  async doGetContent(fullPath: string): Promise<Blob> {
+  async doGetContent(fullPath: string): Promise<Blob | ArrayBuffer | string> {
     const path = this.getPath(fullPath);
     try {
       const b = readFileSync(path);
-      const ab = b.buffer.slice(b.byteOffset, b.byteOffset + b.byteLength);
-      const blob = new Blob([ab]);
-      return blob;
+      return b.buffer;
     } catch (e) {
       const err = e as NodeJS.ErrnoException;
       if (err.code === "ENOENT") {
@@ -100,7 +77,7 @@ export class NodeAccessor extends AbstractAccessor {
         fullPath: fullPath,
         name: fullPath.split(DIR_SEPARATOR).pop(),
         lastModified: stats.mtime.getTime(),
-        size: stats.isFile() ? stats.size : undefined
+        size: stats.isFile() ? stats.size : undefined,
       };
     } catch (e) {
       const err = e as NodeJS.ErrnoException;
@@ -139,20 +116,32 @@ export class NodeAccessor extends AbstractAccessor {
           throw new NotReadableError(this.name, statPath, e);
         }
       }
-      const fullPath = normalizePath(dirPath + DIR_SEPARATOR + name);
+      const fullPath = dirPath + DIR_SEPARATOR + name;
       objects.push({
         fullPath: fullPath,
         name: name,
         lastModified: stats.mtime.getTime(),
-        size: stats.isFile() ? stats.size : undefined
+        size: stats.isFile() ? stats.size : undefined,
       });
     }
     return objects;
   }
 
-  async doPutContent(fullPath: string, content: Blob) {
+  async doGetText(fullPath: string): Promise<string> {
     const path = this.getPath(fullPath);
-    const buffer = await blobToArrayBuffer(content);
+    try {
+      return readFileSync(path, { encoding: "utf-8" });
+    } catch (e) {
+      const err = e as NodeJS.ErrnoException;
+      if (err.code === "ENOENT") {
+        throw new NotFoundError(this.name, fullPath, e);
+      }
+      throw new NotReadableError(this.name, fullPath, e);
+    }
+  }
+
+  async doPutArrayBuffer(fullPath: string, buffer: ArrayBuffer): Promise<void> {
+    const path = this.getPath(fullPath);
     try {
       writeFileSync(path, Buffer.from(buffer));
     } catch (e) {
@@ -162,6 +151,16 @@ export class NodeAccessor extends AbstractAccessor {
       }
       throw new InvalidModificationError(this.name, fullPath, e);
     }
+  }
+
+  async doPutBase64(fullPath: string, base64: string): Promise<void> {
+    const buffer = base64ToArrayBuffer(base64);
+    await this.doPutArrayBuffer(fullPath, buffer);
+  }
+
+  async doPutBlob(fullPath: string, blob: Blob): Promise<void> {
+    const buffer = await blobToArrayBuffer(blob);
+    await this.doPutArrayBuffer(fullPath, buffer);
   }
 
   async doPutObject(obj: FileSystemObject) {
@@ -179,5 +178,24 @@ export class NodeAccessor extends AbstractAccessor {
       } catch {}
       throw new InvalidModificationError(this.name, obj.fullPath, e);
     }
+  }
+
+  async doPutText(fullPath: string, text: string): Promise<void> {
+    const path = this.getPath(fullPath);
+    try {
+      writeFileSync(path, text, { encoding: "utf-8" });
+    } catch (e) {
+      const err = e as NodeJS.ErrnoException;
+      if (err.code === "ENOENT") {
+        throw new NotFoundError(this.name, fullPath, e);
+      }
+      throw new InvalidModificationError(this.name, fullPath, e);
+    }
+  }
+
+  getPath(fullPath: string) {
+    let path = `${this.rootDir}${fullPath}`;
+    path = normalize(path);
+    return path;
   }
 }

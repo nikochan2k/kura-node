@@ -1,4 +1,4 @@
-import { AbstractAccessor, AbstractLocalFileSystem, normalizePath } from "kura";
+import { AbstractAccessor, AbstractLocalFileSystem } from "kura";
 import { FileSystemOptions } from "kura/lib/FileSystemOptions";
 import { NodeAccessor } from "./NodeAccessor";
 
@@ -16,11 +16,11 @@ export class NodeLocalFileSystem extends AbstractLocalFileSystem {
 
   constructor(rootDir: string, options?: FileSystemOptions) {
     super(options);
-    this.rootDir = normalizePath(rootDir);
+    this.rootDir = rootDir;
   }
 
   protected createAccessor(): Promise<AbstractAccessor> {
-    return new Promise<NodeAccessor>(resolve => {
+    return new Promise<NodeAccessor>((resolve) => {
       const accessor = new NodeAccessor(this.rootDir, this.options);
       resolve(accessor);
     });
