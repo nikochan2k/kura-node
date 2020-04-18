@@ -127,42 +127,6 @@ export class NodeAccessor extends AbstractAccessor {
     return objects;
   }
 
-  async doGetText(fullPath: string): Promise<string> {
-    const path = this.getPath(fullPath);
-    try {
-      return readFileSync(path, { encoding: "utf-8" });
-    } catch (e) {
-      const err = e as NodeJS.ErrnoException;
-      if (err.code === "ENOENT") {
-        throw new NotFoundError(this.name, fullPath, e);
-      }
-      throw new NotReadableError(this.name, fullPath, e);
-    }
-  }
-
-  async doPutArrayBuffer(fullPath: string, buffer: ArrayBuffer): Promise<void> {
-    const path = this.getPath(fullPath);
-    try {
-      writeFileSync(path, Buffer.from(buffer));
-    } catch (e) {
-      const err = e as NodeJS.ErrnoException;
-      if (err.code === "ENOENT") {
-        throw new NotFoundError(this.name, fullPath, e);
-      }
-      throw new InvalidModificationError(this.name, fullPath, e);
-    }
-  }
-
-  async doPutBase64(fullPath: string, base64: string): Promise<void> {
-    const buffer = base64ToArrayBuffer(base64);
-    await this.doPutArrayBuffer(fullPath, buffer);
-  }
-
-  async doPutBlob(fullPath: string, blob: Blob): Promise<void> {
-    const buffer = await blobToArrayBuffer(blob);
-    await this.doPutArrayBuffer(fullPath, buffer);
-  }
-
   async doPutObject(obj: FileSystemObject) {
     if (obj.size != null) {
       return;
@@ -180,10 +144,19 @@ export class NodeAccessor extends AbstractAccessor {
     }
   }
 
-  async doPutText(fullPath: string, text: string): Promise<void> {
+  getPath(fullPath: string) {
+    let path = `${this.rootDir}${fullPath}`;
+    path = normalize(path);
+    return path;
+  }
+
+  protected async doPutArrayBuffer(
+    fullPath: string,
+    buffer: ArrayBuffer
+  ): Promise<void> {
     const path = this.getPath(fullPath);
     try {
-      writeFileSync(path, text, { encoding: "utf-8" });
+      writeFileSync(path, Buffer.from(buffer));
     } catch (e) {
       const err = e as NodeJS.ErrnoException;
       if (err.code === "ENOENT") {
@@ -193,9 +166,13 @@ export class NodeAccessor extends AbstractAccessor {
     }
   }
 
-  getPath(fullPath: string) {
-    let path = `${this.rootDir}${fullPath}`;
-    path = normalize(path);
-    return path;
+  protected async doPutBase64(fullPath: string, base64: string): Promise<void> {
+    const buffer = base64ToArrayBuffer(base64);
+    await this.doPutArrayBuffer(fullPath, buffer);
+  }
+
+  protected async doPutBlob(fullPath: string, blob: Blob): Promise<void> {
+    const buffer = await blobToArrayBuffer(blob);
+    await this.doPutArrayBuffer(fullPath, buffer);
   }
 }
