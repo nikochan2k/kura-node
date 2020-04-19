@@ -10,14 +10,13 @@ import {
 } from "fs";
 import {
   AbstractAccessor,
-  base64ToArrayBuffer,
-  blobToArrayBuffer,
   DIR_SEPARATOR,
   FileSystem,
   FileSystemObject,
   InvalidModificationError,
   NotFoundError,
   NotReadableError,
+  toArrayBuffer,
 } from "kura";
 import { FileSystemOptions } from "kura/lib/FileSystemOptions";
 import { normalize } from "path";
@@ -167,12 +166,12 @@ export class NodeAccessor extends AbstractAccessor {
   }
 
   protected async doPutBase64(fullPath: string, base64: string): Promise<void> {
-    const buffer = base64ToArrayBuffer(base64);
+    const buffer = await toArrayBuffer(base64);
     await this.doPutArrayBuffer(fullPath, buffer);
   }
 
   protected async doPutBlob(fullPath: string, blob: Blob): Promise<void> {
-    const buffer = await blobToArrayBuffer(blob);
+    const buffer = await toArrayBuffer(blob);
     await this.doPutArrayBuffer(fullPath, buffer);
   }
 }
