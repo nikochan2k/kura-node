@@ -8,6 +8,7 @@ import {
   unlinkSync,
   writeFileSync,
 } from "fs";
+import { pathToFileURL } from "url";
 import {
   AbstractAccessor,
   DIR_SEPARATOR,
@@ -147,6 +148,12 @@ export class NodeAccessor extends AbstractAccessor {
     let path = `${this.rootDir}${fullPath}`;
     path = normalize(path);
     return path;
+  }
+
+  toURL(fullPath: string): string {
+    const path = this.getPath(fullPath);
+    const url = pathToFileURL(path);
+    return url.toString();
   }
 
   protected async doPutArrayBuffer(
