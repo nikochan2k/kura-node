@@ -14,8 +14,10 @@ try {
 } catch {}
 
 const factory = new NodeLocalFileSystemAsync(rootDir, {
-  useIndex: true,
+  index: true,
+  indexOptions: {
+    writeDelayMillis: 0,
+  },
   verbose: true,
-  indexWriteDelayMillis: 0,
 });
 testAll(factory);

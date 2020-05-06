@@ -58,7 +58,7 @@ export class NodeAccessor extends AbstractAccessor {
     const path = this.getPath(fullPath);
     try {
       const b = readFileSync(path);
-      return b.buffer;
+      return b.buffer.slice(b.byteOffset, b.byteOffset + b.byteLength);
     } catch (e) {
       const err = e as NodeJS.ErrnoException;
       if (err.code === "ENOENT") {
