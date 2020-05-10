@@ -181,11 +181,4 @@ export class NodeAccessor extends AbstractAccessor {
     const buffer = await toArrayBuffer(blob);
     await this.doPutArrayBuffer(fullPath, buffer);
   }
-
-  protected initialize(options: FileSystemOptions) {
-    if (options.shared == null) {
-      options.shared = true;
-    }
-    super.initialize(options);
-  }
 }
