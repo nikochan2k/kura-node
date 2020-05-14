@@ -1,5 +1,8 @@
 import {
+  closeSync,
+  fsyncSync,
   mkdirSync,
+  openSync,
   readdirSync,
   readFileSync,
   rmdirSync,
@@ -8,7 +11,6 @@ import {
   unlinkSync,
   writeFileSync,
 } from "fs";
-import { pathToFileURL } from "url";
 import {
   AbstractAccessor,
   DIR_SEPARATOR,
@@ -21,6 +23,7 @@ import {
 } from "kura";
 import { FileSystemOptions } from "kura/lib/FileSystemOptions";
 import { normalize } from "path";
+import { pathToFileURL } from "url";
 import { NodeFileSystem } from "./NodeFileSystem";
 
 export class NodeAccessor extends AbstractAccessor {
@@ -161,14 +164,21 @@ export class NodeAccessor extends AbstractAccessor {
     buffer: ArrayBuffer
   ): Promise<void> {
     const path = this.getPath(fullPath);
+    let fd: number;
     try {
-      writeFileSync(path, Buffer.from(buffer));
+      fd = openSync(path, "w");
+      writeFileSync(fd, Buffer.from(buffer));
+      fsyncSync(fd);
     } catch (e) {
       const err = e as NodeJS.ErrnoException;
       if (err.code === "ENOENT") {
         throw new NotFoundError(this.name, fullPath, e);
       }
       throw new InvalidModificationError(this.name, fullPath, e);
+    } finally {
+      if (fd != null) {
+        closeSync(fd);
+      }
     }
   }
 
