@@ -55,20 +55,6 @@ export class NodeAccessor extends AbstractAccessor {
     }
   }
 
-  async doGetContent(fullPath: string): Promise<Blob | ArrayBuffer | string> {
-    const path = this.getPath(fullPath);
-    try {
-      const b = readFileSync(path);
-      return b.buffer.slice(b.byteOffset, b.byteOffset + b.byteLength);
-    } catch (e) {
-      const err = e as NodeJS.ErrnoException;
-      if (err.code === "ENOENT") {
-        throw new NotFoundError(this.name, fullPath, e);
-      }
-      throw new NotReadableError(this.name, fullPath, e);
-    }
-  }
-
   async doGetObject(fullPath: string): Promise<FileSystemObject> {
     const path = this.getPath(fullPath);
     try {
@@ -127,11 +113,7 @@ export class NodeAccessor extends AbstractAccessor {
     return objects;
   }
 
-  async doPutObject(obj: FileSystemObject) {
-    if (obj.size != null) {
-      return;
-    }
-
+  async doMakeDirectory(obj: FileSystemObject) {
     const path = this.getPath(obj.fullPath);
     try {
       mkdirSync(path);
@@ -141,6 +123,20 @@ export class NodeAccessor extends AbstractAccessor {
         return;
       } catch {}
       throw new InvalidModificationError(this.name, obj.fullPath, e);
+    }
+  }
+
+  async doReadContent(fullPath: string): Promise<Blob | ArrayBuffer | string> {
+    const path = this.getPath(fullPath);
+    try {
+      const b = readFileSync(path);
+      return b.buffer.slice(b.byteOffset, b.byteOffset + b.byteLength);
+    } catch (e) {
+      const err = e as NodeJS.ErrnoException;
+      if (err.code === "ENOENT") {
+        throw new NotFoundError(this.name, fullPath, e);
+      }
+      throw new NotReadableError(this.name, fullPath, e);
     }
   }
 
@@ -156,7 +152,7 @@ export class NodeAccessor extends AbstractAccessor {
     return url.toString();
   }
 
-  protected async doPutArrayBuffer(
+  protected async doWriteArrayBuffer(
     fullPath: string,
     buffer: ArrayBuffer
   ): Promise<void> {
@@ -172,14 +168,17 @@ export class NodeAccessor extends AbstractAccessor {
     }
   }
 
-  protected async doPutBase64(fullPath: string, base64: string): Promise<void> {
+  protected async doWriteBase64(
+    fullPath: string,
+    base64: string
+  ): Promise<void> {
     const buffer = await toArrayBuffer(base64);
-    await this.doPutArrayBuffer(fullPath, buffer);
+    await this.doWriteArrayBuffer(fullPath, buffer);
   }
 
-  protected async doPutBlob(fullPath: string, blob: Blob): Promise<void> {
+  protected async doWriteBlob(fullPath: string, blob: Blob): Promise<void> {
     const buffer = await toArrayBuffer(blob);
-    await this.doPutArrayBuffer(fullPath, buffer);
+    await this.doWriteArrayBuffer(fullPath, buffer);
   }
 
   protected initialize(options: FileSystemOptions) {
