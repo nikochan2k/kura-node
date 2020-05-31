@@ -18,6 +18,9 @@ import {
   NotFoundError,
   NotReadableError,
   toArrayBuffer,
+  FileNameIndex,
+  INDEX_DIR,
+  getName,
 } from "kura";
 import { FileSystemOptions } from "kura/lib/FileSystemOptions";
 import { normalize } from "path";
@@ -150,6 +153,18 @@ export class NodeAccessor extends AbstractAccessor {
     const path = this.getPath(fullPath);
     const url = pathToFileURL(path);
     return url.toString();
+  }
+
+  protected async doSaveFileNameIndex(
+    dirPath: string,
+    fileNameIndex: FileNameIndex
+  ) {
+    const indexDir = INDEX_DIR + dirPath;
+    this.doMakeDirectory({
+      fullPath: indexDir,
+      name: getName(indexDir),
+    });
+    super.doSaveFileNameIndex(dirPath, fileNameIndex);
   }
 
   protected async doWriteArrayBuffer(

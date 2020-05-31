@@ -504,10 +504,10 @@
   resolved "https://registry.yarnpkg.com/@types/node/-/node-13.13.4.tgz#1581d6c16e3d4803eb079c87d4ac893ee7501c2c"
   integrity sha512-x26ur3dSXgv5AwKS0lNfbjpCakGIduWU1DU91Zz58ONRWrIKGunmZBNv4P7N+e27sJkiGDsw/3fT4AtsqQBrBA==
 
-"@types/node@^14.0.5":
-  version "14.0.5"
-  resolved "https://registry.yarnpkg.com/@types/node/-/node-14.0.5.tgz#3d03acd3b3414cf67faf999aed11682ed121f22b"
-  integrity sha512-90hiq6/VqtQgX8Sp0EzeIsv3r+ellbGj4URKj5j30tLlZvRUpnAe9YbYnjl3pJM93GyXU0tghHhvXHq+5rnCKA==
+"@types/node@^14.0.6":
+  version "14.0.6"
+  resolved "https://registry.yarnpkg.com/@types/node/-/node-14.0.6.tgz#f9e178b2da31a4b0ec60b64649e244c31ce18daf"
+  integrity sha512-FbNmu4F67d3oZMWBV6Y4MaPER+0EpE9eIYf2yaHhCWovc1dlXCZkqGX4NLHfVVr6umt20TNBdRzrNJIzIKfdbw==
 
 "@types/normalize-package-data@^2.4.0":
   version "2.4.0"
@@ -2352,10 +2352,10 @@ kleur@^3.0.3:
   resolved "https://registry.yarnpkg.com/kleur/-/kleur-3.0.3.tgz#a79c9ecc86ee1ce3fa6206d1216c501f147fc07e"
   integrity sha512-eTIzlVOSUR+JxdDFepEYcBMtZ9Qqdef+rnzWdRZuMbOywu5tO2w2N7rqjoANZ5k9vywhL6Br1VRjUIgTQx4E8w==
 
-kura@^0.2.78:
-  version "0.2.78"
-  resolved "https://registry.yarnpkg.com/kura/-/kura-0.2.78.tgz#3d1abcb2800bdd329c4853e80a5c0c531883ca98"
-  integrity sha512-ObkQUtjSVirmtPABORNabAnrfNwIN7GxuhjappvfURAdXatjRME6xr0wnbWM4Z5r762x2Ud/yRlN8GrghaJzEQ==
+kura@^0.2.80:
+  version "0.2.80"
+  resolved "https://registry.yarnpkg.com/kura/-/kura-0.2.80.tgz#6985ef26efcfb873ca4e3c23032145a24fda500b"
+  integrity sha512-yhN9XartxWOC7MJGR7skatjjTSXrx+1rLceOS1B8FJYdADwdM1aLuwVAoemL4y0Hoq8FNIkFisqIi+9moQRnuQ==
   dependencies:
     base-64 "^0.1.0"
     text-encoding-shim "^1.0.5"
@@ -3502,10 +3502,10 @@ tr46@^2.0.2:
   dependencies:
     punycode "^2.1.1"
 
-ts-jest@^26.0.0:
-  version "26.0.0"
-  resolved "https://registry.yarnpkg.com/ts-jest/-/ts-jest-26.0.0.tgz#957b802978249aaf74180b9dcb17b4fd787ad6f3"
-  integrity sha512-eBpWH65mGgzobuw7UZy+uPP9lwu+tPp60o324ASRX4Ijg8UC5dl2zcge4kkmqr2Zeuk9FwIjvCTOPuNMEyGWWw==
+ts-jest@^26.1.0:
+  version "26.1.0"
+  resolved "https://registry.yarnpkg.com/ts-jest/-/ts-jest-26.1.0.tgz#e9070fc97b3ea5557a48b67c631c74eb35e15417"
+  integrity sha512-JbhQdyDMYN5nfKXaAwCIyaWLGwevcT2/dbqRPsQeh6NZPUuXjZQZEfeLb75tz0ubCIgEELNm6xAzTe5NXs5Y4Q==
   dependencies:
     bs-logger "0.x"
     buffer-from "1.x"
