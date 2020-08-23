@@ -1,5 +1,3 @@
-import "tslib";
-
 const globalVar =
   typeof window !== "undefined"
     ? window
