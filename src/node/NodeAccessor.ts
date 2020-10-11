@@ -8,22 +8,21 @@ import {
   unlinkSync,
   writeFileSync,
 } from "fs";
-import { pathToFileURL } from "url";
 import {
   AbstractAccessor,
   DIR_SEPARATOR,
   FileSystem,
   FileSystemObject,
+  INDEX_DIR,
+  INDEX_FILE_NAME,
   InvalidModificationError,
   NotFoundError,
   NotReadableError,
   toArrayBuffer,
-  FileNameIndex,
-  INDEX_DIR,
-  getName,
 } from "kura";
 import { FileSystemOptions } from "kura/lib/FileSystemOptions";
 import { normalize } from "path";
+import { pathToFileURL } from "url";
 import { NodeFileSystem } from "./NodeFileSystem";
 
 export class NodeAccessor extends AbstractAccessor {
@@ -155,16 +154,13 @@ export class NodeAccessor extends AbstractAccessor {
     return url.toString();
   }
 
-  protected async doSaveFileNameIndex(
-    dirPath: string,
-    fileNameIndex: FileNameIndex
-  ) {
+  async saveFileNameIndex(dirPath: string) {
     const indexDir = INDEX_DIR + dirPath;
     this.doMakeDirectory({
       fullPath: indexDir,
-      name: getName(indexDir),
+      name: INDEX_FILE_NAME,
     });
-    super.doSaveFileNameIndex(dirPath, fileNameIndex);
+    return super.saveFileNameIndex(dirPath);
   }
 
   protected async doWriteArrayBuffer(

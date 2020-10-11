@@ -26,9 +26,8 @@
     "compile": "tsc",
     "build": "npm-run-all clean compile",
     "npm-version": "npm version patch",
-    "npm-login": "npm login",
     "npm-publish": "npm publish",
-    "release": "npm-run-all clean compile npm-version npm-login npm-publish",
+    "release": "npm-run-all clean compile npm-version npm-publish",
     "test": "jest --runInBand"
   },
   "jest": {
@@ -51,19 +50,19 @@
     "preset": "ts-jest"
   },
   "devDependencies": {
-    "@types/jest": "^26.0.10",
-    "@types/node": "^14.6.0",
-    "jest": "^26.4.2",
-    "kura": "^0.2.113",
+    "@types/jest": "^26.0.14",
+    "@types/node": "^14.11.8",
+    "jest": "^26.5.2",
+    "kura": "^0.2.132",
     "npm-run-all": "^4.1.5",
     "rimraf": "^3.0.2",
-    "ts-jest": "^26.2.0",
-    "typescript": "^4.0.2"
+    "ts-jest": "^26.4.1",
+    "typescript": "^4.0.3"
   },
   "dependencies": {
-    "tslib": "^2.0.1"
+    "tslib": "^2.0.3"
   },
   "peerDependencies": {
-    "kura": "^0.2.113"
+    "kura": "^0.2.132"
   }
 }
