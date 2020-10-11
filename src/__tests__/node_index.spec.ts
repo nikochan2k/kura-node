@@ -15,9 +15,6 @@ try {
 
 const factory = new NodeLocalFileSystemAsync(rootDir, {
   index: true,
-  indexOptions: {
-    writeDelayMillis: 0,
-  },
   verbose: true,
 });
 testAll(factory);
