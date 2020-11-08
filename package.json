@@ -50,19 +50,19 @@
     "preset": "ts-jest"
   },
   "devDependencies": {
-    "@types/jest": "^26.0.14",
-    "@types/node": "^14.11.8",
-    "jest": "^26.5.2",
-    "kura": "^0.2.134",
+    "@types/jest": "^26.0.15",
+    "@types/node": "^14.14.6",
+    "jest": "^26.6.3",
+    "kura": "^0.2.141",
     "npm-run-all": "^4.1.5",
     "rimraf": "^3.0.2",
-    "ts-jest": "^26.4.1",
-    "typescript": "^4.0.3"
+    "ts-jest": "^26.4.3",
+    "typescript": "^4.0.5"
   },
   "dependencies": {
     "tslib": "^2.0.3"
   },
   "peerDependencies": {
-    "kura": "^0.2.134"
+    "kura": "^0.2.141"
   }
 }
