@@ -1,6 +1,6 @@
 {
   "name": "kura-node",
-  "version": "0.2.32",
+  "version": "0.2.33",
   "description": "The FileSystem API abstraction library, node Plugin",
   "author": "Yoshihiro Seki",
   "license": "MIT",
