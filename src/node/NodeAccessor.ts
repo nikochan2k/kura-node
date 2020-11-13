@@ -26,8 +26,14 @@ import { pathToFileURL } from "url";
 import { NodeFileSystem } from "./NodeFileSystem";
 
 export class NodeAccessor extends AbstractAccessor {
-  filesystem: FileSystem;
-  name: string;
+  // #region Properties (2)
+
+  public filesystem: FileSystem;
+  public name: string;
+
+  // #endregion Properties (2)
+
+  // #region Constructors (1)
 
   constructor(private rootDir: string, options: FileSystemOptions) {
     super(options);
@@ -40,7 +46,11 @@ export class NodeAccessor extends AbstractAccessor {
     this.name = rootDir;
   }
 
-  async doDelete(fullPath: string, isFile: boolean) {
+  // #endregion Constructors (1)
+
+  // #region Public Methods (8)
+
+  public async doDelete(fullPath: string, isFile: boolean) {
     const path = this.getPath(fullPath);
     try {
       if (isFile) {
@@ -57,7 +67,7 @@ export class NodeAccessor extends AbstractAccessor {
     }
   }
 
-  async doGetObject(fullPath: string): Promise<FileSystemObject> {
+  public async doGetObject(fullPath: string): Promise<FileSystemObject> {
     const path = this.getPath(fullPath);
     try {
       const stats = statSync(path);
@@ -76,7 +86,7 @@ export class NodeAccessor extends AbstractAccessor {
     }
   }
 
-  async doGetObjects(dirPath: string): Promise<FileSystemObject[]> {
+  public async doGetObjects(dirPath: string): Promise<FileSystemObject[]> {
     const readdirPath = this.getPath(dirPath);
     let names: string[];
     try {
@@ -115,7 +125,7 @@ export class NodeAccessor extends AbstractAccessor {
     return objects;
   }
 
-  async doMakeDirectory(obj: FileSystemObject) {
+  public async doMakeDirectory(obj: FileSystemObject) {
     const path = this.getPath(obj.fullPath);
     try {
       mkdirSync(path);
@@ -128,7 +138,9 @@ export class NodeAccessor extends AbstractAccessor {
     }
   }
 
-  async doReadContent(fullPath: string): Promise<Blob | ArrayBuffer | string> {
+  public async doReadContent(
+    fullPath: string
+  ): Promise<Blob | ArrayBuffer | string> {
     const path = this.getPath(fullPath);
     try {
       const b = readFileSync(path);
@@ -142,19 +154,13 @@ export class NodeAccessor extends AbstractAccessor {
     }
   }
 
-  getPath(fullPath: string) {
+  public getPath(fullPath: string) {
     let path = `${this.rootDir}${fullPath}`;
     path = normalize(path);
     return path;
   }
 
-  toURL(fullPath: string): string {
-    const path = this.getPath(fullPath);
-    const url = pathToFileURL(path);
-    return url.toString();
-  }
-
-  async saveFileNameIndex(dirPath: string) {
+  public async saveFileNameIndex(dirPath: string) {
     const indexDir = INDEX_DIR + dirPath;
     this.doMakeDirectory({
       fullPath: indexDir,
@@ -162,6 +168,16 @@ export class NodeAccessor extends AbstractAccessor {
     });
     return super.saveFileNameIndex(dirPath);
   }
+
+  public toURL(fullPath: string): string {
+    const path = this.getPath(fullPath);
+    const url = pathToFileURL(path);
+    return url.toString();
+  }
+
+  // #endregion Public Methods (8)
+
+  // #region Protected Methods (3)
 
   protected async doWriteArrayBuffer(
     fullPath: string,
@@ -191,4 +207,6 @@ export class NodeAccessor extends AbstractAccessor {
     const buffer = await toArrayBuffer(blob);
     await this.doWriteArrayBuffer(fullPath, buffer);
   }
+
+  // #endregion Protected Methods (3)
 }

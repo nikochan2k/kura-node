@@ -10,15 +10,25 @@ import { NodeAccessor } from "./NodeAccessor";
 import { NodeFileEntry } from "./NodeFileEntry";
 
 export class NodeDirectoryEntry extends AbstractDirectoryEntry<NodeAccessor> {
+  // #region Constructors (1)
+
   constructor(params: FileSystemParams<NodeAccessor>) {
     super(params);
   }
 
-  toURL() {
+  // #endregion Constructors (1)
+
+  // #region Public Methods (1)
+
+  public toURL() {
     const path = this.params.accessor.getPath(this.fullPath);
     const url = pathToFileURL(path);
     return url.toString();
   }
+
+  // #endregion Public Methods (1)
+
+  // #region Protected Methods (3)
 
   protected createEntry(obj: FileSystemObject) {
     return obj.size != null
@@ -45,4 +55,6 @@ export class NodeDirectoryEntry extends AbstractDirectoryEntry<NodeAccessor> {
       ...obj,
     });
   }
+
+  // #endregion Protected Methods (3)
 }
