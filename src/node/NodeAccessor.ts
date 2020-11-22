@@ -100,8 +100,12 @@ export class NodeAccessor extends AbstractAccessor {
     }
     const objects: FileSystemObject[] = [];
     for (const name of names) {
-      let statPath = `${readdirPath}${DIR_SEPARATOR}${name}`;
-      statPath = normalize(statPath);
+      let statPath: string;
+      if (dirPath === DIR_SEPARATOR) {
+        statPath = readdirPath + name;
+      } else {
+        statPath = `${readdirPath}${DIR_SEPARATOR}${name}`;
+      }
       let stats: Stats;
       try {
         stats = statSync(statPath);
@@ -114,7 +118,12 @@ export class NodeAccessor extends AbstractAccessor {
           throw new NotReadableError(this.name, statPath, e);
         }
       }
-      const fullPath = dirPath + DIR_SEPARATOR + name;
+      let fullPath: string;
+      if (dirPath === DIR_SEPARATOR) {
+        fullPath = DIR_SEPARATOR + name;
+      } else {
+        fullPath = dirPath + DIR_SEPARATOR + name;
+      }
       objects.push({
         fullPath: fullPath,
         name: name,
