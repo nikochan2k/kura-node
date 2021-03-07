@@ -7,7 +7,6 @@ import {
 import { NodeAccessor } from "./NodeAccessor";
 import { NodeDirectoryEntry } from "./NodeDirectoryEntry";
 import { NodeFileWriter } from "./NodeFileWriter";
-import { pathToFileURL } from "url";
 
 export interface ExpoFsFileParams extends FileSystemParams<NodeAccessor> {
   // #region Properties (1)
@@ -25,16 +24,6 @@ export class NodeFileEntry extends AbstractFileEntry<NodeAccessor> {
   }
 
   // #endregion Constructors (1)
-
-  // #region Public Methods (1)
-
-  public toURL() {
-    const path = this.params.accessor.getPath(this.fullPath);
-    const url = pathToFileURL(path);
-    return url.toString();
-  }
-
-  // #endregion Public Methods (1)
 
   // #region Protected Methods (2)
 

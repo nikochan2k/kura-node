@@ -18,16 +18,6 @@ export class NodeDirectoryEntry extends AbstractDirectoryEntry<NodeAccessor> {
 
   // #endregion Constructors (1)
 
-  // #region Public Methods (1)
-
-  public toURL() {
-    const path = this.params.accessor.getPath(this.fullPath);
-    const url = pathToFileURL(path);
-    return url.toString();
-  }
-
-  // #endregion Public Methods (1)
-
   // #region Protected Methods (3)
 
   protected createEntry(obj: FileSystemObject) {

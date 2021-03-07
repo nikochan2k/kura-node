@@ -48,7 +48,7 @@ export class NodeAccessor extends AbstractAccessor {
 
   // #endregion Constructors (1)
 
-  // #region Public Methods (8)
+  // #region Public Methods (7)
 
   public async doDelete(fullPath: string, isFile: boolean) {
     const path = this.getPath(fullPath);
@@ -71,11 +71,13 @@ export class NodeAccessor extends AbstractAccessor {
     const path = this.getPath(fullPath);
     try {
       const stats = statSync(path);
+      const url = pathToFileURL(path).toString();
       return {
-        fullPath: fullPath,
+        fullPath,
         name: fullPath.split(DIR_SEPARATOR).pop(),
         lastModified: stats.mtime.getTime(),
         size: stats.isFile() ? stats.size : undefined,
+        url,
       };
     } catch (e) {
       const err = e as NodeJS.ErrnoException;
@@ -178,13 +180,7 @@ export class NodeAccessor extends AbstractAccessor {
     return super.saveFileNameIndex(dirPath);
   }
 
-  public toURL(fullPath: string): string {
-    const path = this.getPath(fullPath);
-    const url = pathToFileURL(path);
-    return url.toString();
-  }
-
-  // #endregion Public Methods (8)
+  // #endregion Public Methods (7)
 
   // #region Protected Methods (3)
 
