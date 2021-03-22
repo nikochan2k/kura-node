@@ -63,6 +63,6 @@
     "tslib": "^2.1.0"
   },
   "peerDependencies": {
-    "kura": "^0.3.32"
+    "kura": "^0.3.35"
   }
 }

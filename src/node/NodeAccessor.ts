@@ -171,15 +171,6 @@ export class NodeAccessor extends AbstractAccessor {
     return path;
   }
 
-  public async saveFileNameIndex(dirPath: string) {
-    const indexDir = INDEX_DIR + dirPath;
-    this.doMakeDirectory({
-      fullPath: indexDir,
-      name: INDEX_FILE_NAME,
-    });
-    return super.saveFileNameIndex(dirPath);
-  }
-
   // #endregion Public Methods (7)
 
   // #region Protected Methods (3)
