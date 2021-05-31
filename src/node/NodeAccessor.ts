@@ -13,12 +13,10 @@ import {
   DIR_SEPARATOR,
   FileSystem,
   FileSystemObject,
-  INDEX_DIR,
-  INDEX_FILE_NAME,
   InvalidModificationError,
   NotFoundError,
   NotReadableError,
-  toArrayBuffer,
+  toBuffer,
 } from "kura";
 import { FileSystemOptions } from "kura/lib/FileSystemOptions";
 import { normalize } from "path";
@@ -48,7 +46,7 @@ export class NodeAccessor extends AbstractAccessor {
 
   // #endregion Constructors (1)
 
-  // #region Public Methods (7)
+  // #region Public Methods (6)
 
   public async doDelete(fullPath: string, isFile: boolean) {
     const path = this.getPath(fullPath);
@@ -151,7 +149,7 @@ export class NodeAccessor extends AbstractAccessor {
 
   public async doReadContent(
     fullPath: string
-  ): Promise<Blob | ArrayBuffer | string> {
+  ): Promise<Blob | BufferSource | string> {
     const path = this.getPath(fullPath);
     try {
       const b = readFileSync(path);
@@ -171,17 +169,35 @@ export class NodeAccessor extends AbstractAccessor {
     return path;
   }
 
-  // #endregion Public Methods (7)
+  // #endregion Public Methods (6)
 
-  // #region Protected Methods (3)
+  // #region Protected Methods (4)
 
   protected async doWriteArrayBuffer(
     fullPath: string,
-    buffer: ArrayBuffer
+    arrayBuffer: ArrayBuffer
   ): Promise<void> {
+    const buffer = await toBuffer(arrayBuffer);
+    await this.doWriteBuffer(fullPath, buffer);
+  }
+
+  protected async doWriteBase64(
+    fullPath: string,
+    base64: string
+  ): Promise<void> {
+    const buffer = await toBuffer(base64);
+    await this.doWriteBuffer(fullPath, buffer);
+  }
+
+  protected async doWriteBlob(fullPath: string, blob: Blob): Promise<void> {
+    const buffer = await toBuffer(blob);
+    await this.doWriteBuffer(fullPath, buffer);
+  }
+
+  protected async doWriteBuffer(fullPath: string, buffer: Buffer) {
     const path = this.getPath(fullPath);
     try {
-      writeFileSync(path, Buffer.from(buffer));
+      writeFileSync(path, buffer);
     } catch (e) {
       const err = e as NodeJS.ErrnoException;
       if (err.code === "ENOENT") {
@@ -191,18 +207,5 @@ export class NodeAccessor extends AbstractAccessor {
     }
   }
 
-  protected async doWriteBase64(
-    fullPath: string,
-    base64: string
-  ): Promise<void> {
-    const buffer = await toArrayBuffer(base64);
-    await this.doWriteArrayBuffer(fullPath, buffer);
-  }
-
-  protected async doWriteBlob(fullPath: string, blob: Blob): Promise<void> {
-    const buffer = await toArrayBuffer(blob);
-    await this.doWriteArrayBuffer(fullPath, buffer);
-  }
-
-  // #endregion Protected Methods (3)
+  // #endregion Protected Methods (4)
 }
