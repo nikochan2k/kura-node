@@ -1,4 +1,5 @@
 import { createReadStream, createWriteStream } from "fs";
+import { get, request } from "http";
 import {
   AbstractAccessor,
   FileSystemObject,
@@ -9,18 +10,18 @@ import {
 } from "kura";
 import { Readable, Writable } from "stream";
 import { fileURLToPath, URL } from "url";
-import { get, request } from "http";
 
 export class NodeTransferer extends Transferer {
-  constructor(
-    fromAccessor: AbstractAccessor,
-    toAccessor: AbstractAccessor,
-    private timeout = 2000
-  ) {
-    super(fromAccessor, toAccessor);
+  constructor(private timeout = 2000) {
+    super();
   }
 
-  public async transfer(fromObj: FileSystemObject, toObj: FileSystemObject) {
+  public async transfer(
+    fromAccessor: AbstractAccessor,
+    fromObj: FileSystemObject,
+    toAccessor: AbstractAccessor,
+    toObj: FileSystemObject
+  ) {
     const fromUrl = fromObj.url;
     const toUrl = toObj.url;
     if (fromUrl && toUrl) {
@@ -49,16 +50,12 @@ export class NodeTransferer extends Transferer {
               const err = e as NodeJS.ErrnoException;
               if (err.code === "ENOENT") {
                 reject2(
-                  new NotFoundError(this.fromAccessor.name, fromObj.fullPath, e)
+                  new NotFoundError(fromAccessor.name, fromObj.fullPath, e)
                 );
                 return;
               }
               reject2(
-                new NotReadableError(
-                  this.fromAccessor.name,
-                  fromObj.fullPath,
-                  e
-                )
+                new NotReadableError(fromAccessor.name, fromObj.fullPath, e)
               );
             });
           });
@@ -77,29 +74,21 @@ export class NodeTransferer extends Transferer {
         readable.on("error", (e) => {
           const err = e as NodeJS.ErrnoException;
           if (err.code === "ENOENT") {
-            reject(
-              new NotFoundError(this.fromAccessor.name, fromObj.fullPath, e)
-            );
+            reject(new NotFoundError(fromAccessor.name, fromObj.fullPath, e));
             return;
           }
-          reject(
-            new NotReadableError(this.fromAccessor.name, fromObj.fullPath, e)
-          );
+          reject(new NotReadableError(fromAccessor.name, fromObj.fullPath, e));
         });
         writable.on("finish", () => resolve());
         writable.on("error", (e) => {
           reject(
-            new InvalidModificationError(
-              this.toAccessor.name,
-              toObj.fullPath,
-              e
-            )
+            new InvalidModificationError(toAccessor.name, toObj.fullPath, e)
           );
         });
         readable.pipe(writable);
       });
     } else {
-      await super.transfer(fromObj, toObj);
+      await super.transfer(fromAccessor, fromObj, toAccessor, toObj);
     }
   }
 }
