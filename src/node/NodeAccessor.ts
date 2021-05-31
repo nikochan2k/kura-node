@@ -1,6 +1,4 @@
 import {
-  createReadStream,
-  createWriteStream,
   mkdirSync,
   readdirSync,
   readFileSync,
@@ -10,20 +8,19 @@ import {
   unlinkSync,
   writeFileSync,
 } from "fs";
-import { get } from "http";
 import {
   AbstractAccessor,
   DIR_SEPARATOR,
   FileSystem,
   FileSystemObject,
+  FileSystemOptions,
   InvalidModificationError,
   NotFoundError,
   NotReadableError,
   toBuffer,
 } from "kura";
-import { FileSystemOptions } from "kura/lib/FileSystemOptions";
 import { normalize } from "path";
-import { fileURLToPath, pathToFileURL } from "url";
+import { pathToFileURL } from "url";
 import { NodeFileSystem } from "./NodeFileSystem";
 
 export class NodeAccessor extends AbstractAccessor {
@@ -170,45 +167,6 @@ export class NodeAccessor extends AbstractAccessor {
     let path = `${this.rootDir}${fullPath}`;
     path = normalize(path);
     return path;
-  }
-
-  public async transfer(
-    fromAccessor: AbstractAccessor,
-    fromObj: FileSystemObject,
-    toObj: FileSystemObject
-  ) {
-    const fromUrl = fromObj.url;
-    if (fromUrl) {
-      await new Promise<void>((resolve, reject) => {
-        const toPath = this.getPath(toObj.fullPath);
-        const toFile = createWriteStream(toPath);
-        toFile.on("finish", () => resolve());
-        toFile.on("error", (e) => {
-          reject(new InvalidModificationError(this.name, toObj.fullPath, e));
-        });
-        const onReadError = (e: Error) => {
-          const err = e as NodeJS.ErrnoException;
-          if (err.code === "ENOENT") {
-            reject(new NotFoundError(fromAccessor.name, fromObj.fullPath, e));
-            return;
-          }
-          reject(new NotReadableError(fromAccessor.name, fromObj.fullPath, e));
-        };
-        if (fromUrl.startsWith("file:")) {
-          const fromPath = fileURLToPath(fromUrl);
-          const fromFile = createReadStream(fromPath);
-          fromFile.on("error", (e) => onReadError);
-          fromFile.pipe(toFile);
-        } else {
-          get(fromUrl, (res) => {
-            res.pipe(toFile);
-          }).on("error", onReadError);
-        }
-      });
-    } else {
-      const content = await fromAccessor.doReadContent(fromObj.fullPath);
-      await this.doWriteContent(toObj.fullPath, content);
-    }
   }
 
   // #endregion Public Methods (7)
