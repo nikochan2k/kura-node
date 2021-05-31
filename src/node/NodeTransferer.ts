@@ -62,7 +62,7 @@ export class NodeTransferer extends Transferer {
               );
             });
           });
-          if (toUrl.startsWith("file")) {
+          if (toUrl.startsWith("file:")) {
             const toPath = fileURLToPath(toUrl);
             writable = createWriteStream(toPath);
           } else {
