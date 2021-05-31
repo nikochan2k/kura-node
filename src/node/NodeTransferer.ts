@@ -22,8 +22,8 @@ export class NodeTransferer extends Transferer {
     toAccessor: AbstractAccessor,
     toObj: FileSystemObject
   ) {
-    const fromUrl = fromObj.url;
-    const toUrl = toObj.url;
+    const fromUrl = await fromAccessor.getURL(fromObj.fullPath);
+    const toUrl = await toAccessor.getURL(toObj.fullPath);
     if (fromUrl && toUrl) {
       await new Promise<void>(async (resolve, reject) => {
         let readable: Readable;

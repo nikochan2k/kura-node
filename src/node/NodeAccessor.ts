@@ -65,17 +65,21 @@ export class NodeAccessor extends AbstractAccessor {
     }
   }
 
+  public async getURL(fullPath: string): Promise<string> {
+    const path = this.getPath(fullPath);
+    const url = pathToFileURL(path).toString();
+    return url;
+  }
+
   public async doGetObject(fullPath: string): Promise<FileSystemObject> {
     const path = this.getPath(fullPath);
     try {
       const stats = statSync(path);
-      const url = pathToFileURL(path).toString();
       return {
         fullPath,
         name: fullPath.split(DIR_SEPARATOR).pop(),
         lastModified: stats.mtime.getTime(),
         size: stats.isFile() ? stats.size : undefined,
-        url,
       };
     } catch (e) {
       const err = e as NodeJS.ErrnoException;
