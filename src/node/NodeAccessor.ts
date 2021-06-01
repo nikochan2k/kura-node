@@ -38,7 +38,7 @@ export class NodeAccessor extends AbstractAccessor {
     try {
       statSync(rootDir);
     } catch {
-      mkdirSync(rootDir);
+      mkdirSync(rootDir, { recursive: true });
     }
     this.filesystem = new NodeFileSystem(this);
     this.name = rootDir;
