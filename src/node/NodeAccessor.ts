@@ -13,8 +13,6 @@ import {
   DIR_SEPARATOR,
   FileSystem,
   FileSystemObject,
-  INDEX_DIR,
-  INDEX_FILE_NAME,
   InvalidModificationError,
   NotFoundError,
   NotReadableError,
@@ -77,7 +75,6 @@ export class NodeAccessor extends AbstractAccessor {
         name: fullPath.split(DIR_SEPARATOR).pop(),
         lastModified: stats.mtime.getTime(),
         size: stats.isFile() ? stats.size : undefined,
-        url,
       };
     } catch (e) {
       const err = e as NodeJS.ErrnoException;
@@ -169,6 +166,12 @@ export class NodeAccessor extends AbstractAccessor {
     let path = `${this.rootDir}${fullPath}`;
     path = normalize(path);
     return path;
+  }
+
+  public async getURL(fullPath: string): Promise<string> {
+    const path = this.getPath(fullPath);
+    const url = pathToFileURL(path).toString();
+    return url;
   }
 
   // #endregion Public Methods (7)

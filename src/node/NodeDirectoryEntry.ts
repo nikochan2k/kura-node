@@ -5,7 +5,6 @@ import {
   FileSystemObject,
   FileSystemParams,
 } from "kura";
-import { pathToFileURL } from "url";
 import { NodeAccessor } from "./NodeAccessor";
 import { NodeFileEntry } from "./NodeFileEntry";
 
