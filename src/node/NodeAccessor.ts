@@ -176,7 +176,7 @@ export class NodeAccessor extends AbstractAccessor {
 
   // #endregion Public Methods (7)
 
-  // #region Protected Methods (3)
+  // #region Protected Methods (4)
 
   protected async doWriteArrayBuffer(
     fullPath: string,
@@ -207,5 +207,18 @@ export class NodeAccessor extends AbstractAccessor {
     await this.doWriteArrayBuffer(fullPath, buffer);
   }
 
-  // #endregion Protected Methods (3)
+  protected async doWriteBuffer(fullPath: string, buffer: Buffer) {
+    const path = this.getPath(fullPath);
+    try {
+      writeFileSync(path, buffer);
+    } catch (e) {
+      const err = e as NodeJS.ErrnoException;
+      if (err.code === "ENOENT") {
+        throw new NotFoundError(this.name, fullPath, e);
+      }
+      throw new InvalidModificationError(this.name, fullPath, e);
+    }
+  }
+
+  // #endregion Protected Methods (4)
 }
