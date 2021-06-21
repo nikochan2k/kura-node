@@ -168,7 +168,10 @@ export class NodeAccessor extends AbstractAccessor {
     return path;
   }
 
-  public async getURL(fullPath: string): Promise<string> {
+  public async getURL(
+    fullPath: string,
+    method?: "GET" | "POST" | "PUT" | "DELETE"
+  ): Promise<string> {
     const path = this.getPath(fullPath);
     const url = pathToFileURL(path).toString();
     return url;
