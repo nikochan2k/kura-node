@@ -22,8 +22,8 @@ export class NodeTransferer extends Transferer {
     toAccessor: AbstractAccessor,
     toObj: FileSystemObject
   ) {
-    const fromUrl = await fromAccessor.getURL(fromObj.fullPath);
-    const toUrl = await toAccessor.getURL(toObj.fullPath);
+    const fromUrl = await fromAccessor.getURL(fromObj.fullPath, "GET");
+    const toUrl = await toAccessor.getURL(toObj.fullPath, "GET");
     if (fromUrl && toUrl) {
       await new Promise<void>(async (resolve, reject) => {
         let readable: Readable;
@@ -35,7 +35,8 @@ export class NodeTransferer extends Transferer {
             const toPath = fileURLToPath(toUrl);
             writable = createWriteStream(toPath);
           } else {
-            const url = new URL(toUrl);
+            const toUrlPut = await toAccessor.getURL(toObj.fullPath, "PUT");
+            const url = new URL(toUrlPut);
             writable = request({
               method: "PUT",
               href: url.href,
@@ -63,7 +64,8 @@ export class NodeTransferer extends Transferer {
             const toPath = fileURLToPath(toUrl);
             writable = createWriteStream(toPath);
           } else {
-            const url = new URL(toUrl);
+            const toUrlPut = await toAccessor.getURL(toObj.fullPath, "PUT");
+            const url = new URL(toUrlPut);
             writable = request({
               method: "PUT",
               href: url.href,
