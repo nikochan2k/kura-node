@@ -1,5 +1,4 @@
 import { createReadStream, createWriteStream } from "fs";
-import { IncomingMessage } from "http";
 import { get, request } from "https";
 import {
   AbstractAccessor,
@@ -48,7 +47,7 @@ export class NodeTransferer extends Transferer {
                   new InvalidModificationError(
                     toAccessor.name,
                     toObj.fullPath,
-                    res.statusMessage
+                    res.statusCode + ": " + res.statusMessage
                   )
                 );
               }
@@ -83,7 +82,7 @@ export class NodeTransferer extends Transferer {
                     new NotReadableError(
                       fromAccessor.name,
                       fromObj.fullPath,
-                      res.statusMessage
+                      res.statusCode + ": " + res.statusMessage
                     )
                   );
                 }
