@@ -81,7 +81,9 @@ export class NodeTransferer extends Transferer {
             });
           }
         }
+        readable.on("end", () => writable.end());
         readable.on("error", (e) => {
+          writable.end();
           const err = e as NodeJS.ErrnoException;
           if (err.code === "ENOENT") {
             reject(new NotFoundError(fromAccessor.name, fromObj.fullPath, e));
@@ -89,13 +91,16 @@ export class NodeTransferer extends Transferer {
           }
           reject(new NotReadableError(fromAccessor.name, fromObj.fullPath, e));
         });
-        writable.on("close", () => resolve());
+        readable.on("data", (chunk) => {
+          writable.write(chunk);
+        });
+        writable.on("finish", () => resolve());
         writable.on("error", (e) => {
+          readable.destroy();
           reject(
             new InvalidModificationError(toAccessor.name, toObj.fullPath, e)
           );
         });
-        const stream = readable.pipe(writable);
       });
     } else {
       await super.transfer(fromAccessor, fromObj, toAccessor, toObj);
