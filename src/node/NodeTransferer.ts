@@ -81,9 +81,9 @@ export class NodeTransferer extends Transferer {
             });
           }
         }
-        readable.on("end", () => writable.end());
+        readable.on("end", () => writable.destroy());
         readable.on("error", (e) => {
-          writable.end();
+          writable.destroy();
           const err = e as NodeJS.ErrnoException;
           if (err.code === "ENOENT") {
             reject(new NotFoundError(fromAccessor.name, fromObj.fullPath, e));
@@ -94,7 +94,7 @@ export class NodeTransferer extends Transferer {
         readable.on("data", (chunk) => {
           writable.write(chunk);
         });
-        writable.on("finish", () => resolve());
+        writable.on("close", () => resolve());
         writable.on("error", (e) => {
           readable.destroy();
           reject(
