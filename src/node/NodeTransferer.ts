@@ -1,5 +1,5 @@
 import { createReadStream, createWriteStream } from "fs";
-import { get, request } from "http";
+import { get, request } from "https";
 import {
   AbstractAccessor,
   FileSystemObject,
@@ -22,6 +22,11 @@ export class NodeTransferer extends Transferer {
     toAccessor: AbstractAccessor,
     toObj: FileSystemObject
   ) {
+    if (!fromObj.size && !toObj.size) {
+      await super.transfer(fromAccessor, fromObj, toAccessor, toObj);
+      return;
+    }
+
     const fromUrl = await fromAccessor.getURL(fromObj.fullPath, "GET");
     const toUrl = await toAccessor.getURL(toObj.fullPath, "GET");
     if (fromUrl && toUrl) {
@@ -38,8 +43,12 @@ export class NodeTransferer extends Transferer {
             const toUrlPut = await toAccessor.getURL(toObj.fullPath, "PUT");
             const url = new URL(toUrlPut);
             writable = request({
+              protocol: url.protocol,
+              hostname: url.hostname,
+              port: url.port,
+              pathname: url.pathname,
+              search: url.search,
               method: "PUT",
-              href: url.href,
               timeout: this.timeout,
             });
           }
@@ -67,8 +76,12 @@ export class NodeTransferer extends Transferer {
             const toUrlPut = await toAccessor.getURL(toObj.fullPath, "PUT");
             const url = new URL(toUrlPut);
             writable = request({
+              protocol: url.protocol,
+              hostname: url.hostname,
+              port: url.port,
+              pathname: url.pathname,
+              search: url.search,
               method: "PUT",
-              href: url.href,
               timeout: this.timeout,
             });
           }
