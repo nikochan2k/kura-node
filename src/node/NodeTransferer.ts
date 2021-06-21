@@ -22,11 +22,6 @@ export class NodeTransferer extends Transferer {
     toAccessor: AbstractAccessor,
     toObj: FileSystemObject
   ) {
-    if (!fromObj.size && !toObj.size) {
-      await super.transfer(fromAccessor, fromObj, toAccessor, toObj);
-      return;
-    }
-
     const fromUrl = await fromAccessor.getURL(fromObj.fullPath, "GET");
     const toUrl = await toAccessor.getURL(toObj.fullPath, "GET");
     if (fromUrl && toUrl) {
@@ -94,13 +89,13 @@ export class NodeTransferer extends Transferer {
           }
           reject(new NotReadableError(fromAccessor.name, fromObj.fullPath, e));
         });
-        writable.on("finish", () => resolve());
+        writable.on("close", () => resolve());
         writable.on("error", (e) => {
           reject(
             new InvalidModificationError(toAccessor.name, toObj.fullPath, e)
           );
         });
-        readable.pipe(writable);
+        const stream = readable.pipe(writable);
       });
     } else {
       await super.transfer(fromAccessor, fromObj, toAccessor, toObj);
