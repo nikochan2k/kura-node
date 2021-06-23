@@ -33,30 +33,15 @@ export class NodeTransferer extends Transferer {
           const url = new URL(toUrlPut);
           const request =
             url.protocol === "https" ? https.request : http.request;
-          return request(
-            {
-              protocol: url.protocol,
-              hostname: url.hostname,
-              port: url.port,
-              pathname: url.pathname,
-              search: url.search,
-              method: "PUT",
-              timeout: this.timeout,
-            },
-            (res) => {
-              if (res.statusCode === 200 || res.statusCode === 404) {
-                resolve();
-              } else {
-                reject(
-                  new InvalidModificationError(
-                    toAccessor.name,
-                    fullPath,
-                    res.statusCode + ": " + res.statusMessage
-                  )
-                );
-              }
-            }
-          );
+          return request({
+            protocol: url.protocol,
+            hostname: url.hostname,
+            port: url.port,
+            pathname: url.pathname,
+            search: url.search,
+            method: "PUT",
+            timeout: this.timeout,
+          });
         };
 
         let readable: Readable;
