@@ -1,5 +1,6 @@
 import { createReadStream, createWriteStream } from "fs";
-import { get, request } from "https";
+import * as http from "http";
+import * as https from "https";
 import {
   AbstractAccessor,
   FileSystemObject,
@@ -29,6 +30,8 @@ export class NodeTransferer extends Transferer {
         const open = async () => {
           const toUrlPut = await toAccessor.getURL(toObj.fullPath, "PUT");
           const url = new URL(toUrlPut);
+          const request =
+            url.protocol === "https" ? https.request : http.request;
           return request(
             {
               protocol: url.protocol,
@@ -69,6 +72,8 @@ export class NodeTransferer extends Transferer {
           }
         } else {
           try {
+            const url = new URL(fromUrl);
+            const get = url.protocol === "https" ? https.get : http.get;
             readable = await new Promise((resolve2, reject2) => {
               get(fromUrl, (res) => {
                 if (res.statusCode === 200) {
