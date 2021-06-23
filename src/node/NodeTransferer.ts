@@ -29,19 +29,6 @@ export class NodeTransferer extends Transferer {
       await new Promise<void>(async (resolve, reject) => {
         const openWritable = async () => {
           const fullPath = toObj.fullPath;
-          try {
-            await toAccessor.doGetObject(fullPath);
-          } catch (e) {
-            if (e instanceof NotFoundError) {
-              try {
-                await toAccessor.doWriteContent(fullPath, "");
-              } catch (e) {
-                new InvalidModificationError(toAccessor.name, fullPath, e);
-              }
-            } else {
-              new InvalidModificationError(toAccessor.name, fullPath, e);
-            }
-          }
           const toUrlPut = await toAccessor.getURL(fullPath, "PUT");
           const url = new URL(toUrlPut);
           const request =
@@ -57,7 +44,7 @@ export class NodeTransferer extends Transferer {
               timeout: this.timeout,
             },
             (res) => {
-              if (res.statusCode === 200) {
+              if (res.statusCode === 200 || res.statusCode === 404) {
                 resolve();
               } else {
                 reject(
