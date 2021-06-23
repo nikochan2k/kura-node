@@ -27,8 +27,22 @@ export class NodeTransferer extends Transferer {
     const toUrl = await toAccessor.getURL(toObj.fullPath, "GET");
     if (fromUrl && toUrl) {
       await new Promise<void>(async (resolve, reject) => {
-        const open = async () => {
-          const toUrlPut = await toAccessor.getURL(toObj.fullPath, "PUT");
+        const openWritable = async () => {
+          const fullPath = toObj.fullPath;
+          try {
+            await toAccessor.doGetObject(fullPath);
+          } catch (e) {
+            if (e instanceof NotFoundError) {
+              try {
+                await toAccessor.doWriteContent(fullPath, "");
+              } catch (e) {
+                new InvalidModificationError(toAccessor.name, fullPath, e);
+              }
+            } else {
+              new InvalidModificationError(toAccessor.name, fullPath, e);
+            }
+          }
+          const toUrlPut = await toAccessor.getURL(fullPath, "PUT");
           const url = new URL(toUrlPut);
           const request =
             url.protocol === "https" ? https.request : http.request;
@@ -49,7 +63,7 @@ export class NodeTransferer extends Transferer {
                 reject(
                   new InvalidModificationError(
                     toAccessor.name,
-                    toObj.fullPath,
+                    fullPath,
                     res.statusCode + ": " + res.statusMessage
                   )
                 );
@@ -68,7 +82,7 @@ export class NodeTransferer extends Transferer {
             writable = createWriteStream(toPath);
             writable.on("finish", () => resolve());
           } else {
-            writable = await open();
+            writable = await openWritable();
           }
         } else {
           try {
@@ -105,7 +119,7 @@ export class NodeTransferer extends Transferer {
             writable = createWriteStream(toPath);
             writable.on("finish", () => resolve());
           } else {
-            writable = await open();
+            writable = await openWritable();
           }
         }
         readable.on("error", (e) => {
