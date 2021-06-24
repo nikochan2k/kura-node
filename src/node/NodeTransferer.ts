@@ -32,7 +32,7 @@ export class NodeTransferer extends Transferer {
           const toUrlPut = await toAccessor.getURL(fullPath, "PUT");
           const url = new URL(toUrlPut);
           const request =
-            url.protocol === "https" ? https.request : http.request;
+            url.protocol === "https:" ? https.request : http.request;
           return request(
             {
               protocol: url.protocol,
@@ -42,14 +42,22 @@ export class NodeTransferer extends Transferer {
               search: url.search,
               method: "PUT",
               timeout: this.timeout,
+              headers: {
+                "Content-Length": fromObj.size,
+              },
             },
             (res) => {
-              res.on("close", () => resolve());
-              res.on("error", (e) =>
+              if (res.statusCode === 200) {
+                resolve();
+              } else {
                 reject(
-                  new InvalidModificationError(toAccessor.name, fullPath, e)
-                )
-              );
+                  new InvalidModificationError(
+                    toAccessor.name,
+                    fullPath,
+                    res.statusCode + ": " + res.statusMessage
+                  )
+                );
+              }
             }
           );
         };
@@ -69,7 +77,7 @@ export class NodeTransferer extends Transferer {
         } else {
           try {
             const url = new URL(fromUrl);
-            const get = url.protocol === "https" ? https.get : http.get;
+            const get = url.protocol === "https:" ? https.get : http.get;
             readable = await new Promise((resolve2, reject2) => {
               get(fromUrl, (res) => {
                 if (res.statusCode === 200) {
