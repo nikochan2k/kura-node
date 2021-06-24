@@ -44,17 +44,12 @@ export class NodeTransferer extends Transferer {
               timeout: this.timeout,
             },
             (res) => {
-              if (res.statusCode === 200 || res.statusCode === 404) {
-                resolve();
-              } else {
+              res.on("close", () => resolve());
+              res.on("error", (e) =>
                 reject(
-                  new InvalidModificationError(
-                    toAccessor.name,
-                    fullPath,
-                    res.statusCode + ": " + res.statusMessage
-                  )
-                );
-              }
+                  new InvalidModificationError(toAccessor.name, fullPath, e)
+                )
+              );
             }
           );
         };
