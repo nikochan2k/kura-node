@@ -122,7 +122,9 @@ export class NodeTransferer extends Transferer {
             new InvalidModificationError(toAccessor.name, toObj.fullPath, e)
           );
         });
-        readable.pipe(writable);
+        readable.on("data", (chunk) => {
+          writable.write(chunk);
+        });
       });
     } else {
       await super.transfer(fromAccessor, fromObj, toAccessor, toObj);
