@@ -109,6 +109,11 @@ export class NodeTransferer extends Transferer {
             writable = await openWritable();
           }
         }
+        writable.on("error", (e) =>
+          reject(
+            new InvalidModificationError(toAccessor.name, toObj.fullPath, e)
+          )
+        );
         readable.on("error", (e) => {
           const err = e as NodeJS.ErrnoException;
           if (err.code === "ENOENT") {
@@ -117,11 +122,7 @@ export class NodeTransferer extends Transferer {
           }
           reject(new NotReadableError(fromAccessor.name, fromObj.fullPath, e));
         });
-        writable.on("error", (e) => {
-          reject(
-            new InvalidModificationError(toAccessor.name, toObj.fullPath, e)
-          );
-        });
+        readable.on("end", () => writable.end());
         readable.on("data", (chunk) => {
           writable.write(chunk);
         });
