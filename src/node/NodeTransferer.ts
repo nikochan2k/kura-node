@@ -22,7 +22,7 @@ export class NodeTransferer extends Transferer {
     if (this.options) {
       this.options = {};
     }
-    if (this.options.timeout) {
+    if (this.options.timeout == null) {
       this.options.timeout = 60000;
     }
     if (this.options.getOnly == null) {
