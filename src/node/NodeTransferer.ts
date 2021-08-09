@@ -19,7 +19,7 @@ interface NodeTransfererOptions {
 export class NodeTransferer extends Transferer {
   constructor(private options?: NodeTransfererOptions) {
     super();
-    if (this.options) {
+    if (!this.options) {
       this.options = {};
     }
     if (this.options.timeout == null) {
