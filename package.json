@@ -51,17 +51,17 @@
   },
   "devDependencies": {
     "@types/jest": "^26.0.24",
-    "@types/node": "^16.4.13",
+    "@types/node": "^16.10.5",
     "@types/request": "^2.48.7",
     "jest": "^26.6.3",
     "npm-run-all": "^4.1.5",
     "rimraf": "^3.0.2",
     "ts-jest": "^26.5.6",
-    "typescript": "^4.3.5"
+    "typescript": "^4.4.4"
   },
   "dependencies": {
-    "kura": "^0.3.61",
+    "kura": "^0.3.65",
     "request": "^2.88.2",
-    "tslib": "^2.3.0"
+    "tslib": "^2.3.1"
   }
 }
