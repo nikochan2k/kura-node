@@ -1,6 +1,6 @@
 {
   "name": "kura-node",
-  "version": "0.3.41",
+  "version": "0.4.9",
   "description": "The FileSystem API abstraction library, node Plugin",
   "author": "Yoshihiro Seki",
   "license": "MIT",
@@ -60,7 +60,7 @@
     "typescript": "^4.3.5"
   },
   "dependencies": {
-    "kura": "^0.3.65",
+    "kura": "^0.4.25",
     "request": "^2.88.2",
     "tslib": "^2.3.1"
   }

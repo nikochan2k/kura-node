@@ -9,15 +9,9 @@ import { NodeAccessor } from "./NodeAccessor";
 import { NodeFileEntry } from "./NodeFileEntry";
 
 export class NodeDirectoryEntry extends AbstractDirectoryEntry<NodeAccessor> {
-  // #region Constructors (1)
-
   constructor(params: FileSystemParams<NodeAccessor>) {
     super(params);
   }
-
-  // #endregion Constructors (1)
-
-  // #region Protected Methods (3)
 
   protected createEntry(obj: FileSystemObject) {
     return obj.size != null
@@ -44,6 +38,4 @@ export class NodeDirectoryEntry extends AbstractDirectoryEntry<NodeAccessor> {
       ...obj,
     });
   }
-
-  // #endregion Protected Methods (3)
 }

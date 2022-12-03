@@ -12,8 +12,8 @@ import { Readable, Writable } from "stream";
 import { fileURLToPath } from "url";
 
 interface NodeTransfererOptions {
-  timeout?: number;
   getOnly?: boolean;
+  timeout?: number;
 }
 
 export class NodeTransferer extends Transferer {

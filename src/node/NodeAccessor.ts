@@ -24,14 +24,8 @@ import { pathToFileURL } from "url";
 import { NodeFileSystem } from "./NodeFileSystem";
 
 export class NodeAccessor extends AbstractAccessor {
-  // #region Properties (2)
-
   public filesystem: FileSystem;
   public name: string;
-
-  // #endregion Properties (2)
-
-  // #region Constructors (1)
 
   constructor(private rootDir: string, options: FileSystemOptions) {
     super(options);
@@ -43,10 +37,6 @@ export class NodeAccessor extends AbstractAccessor {
     this.filesystem = new NodeFileSystem(this);
     this.name = rootDir;
   }
-
-  // #endregion Constructors (1)
-
-  // #region Public Methods (7)
 
   public async doDelete(fullPath: string, isFile: boolean) {
     const path = this.getPath(fullPath);
@@ -69,7 +59,6 @@ export class NodeAccessor extends AbstractAccessor {
     const path = this.getPath(fullPath);
     try {
       const stats = statSync(path);
-      const url = pathToFileURL(path).toString();
       return {
         fullPath,
         name: fullPath.split(DIR_SEPARATOR).pop(),
@@ -177,10 +166,6 @@ export class NodeAccessor extends AbstractAccessor {
     return url;
   }
 
-  // #endregion Public Methods (7)
-
-  // #region Protected Methods (4)
-
   protected async doWriteArrayBuffer(
     fullPath: string,
     buffer: ArrayBuffer
@@ -222,6 +207,4 @@ export class NodeAccessor extends AbstractAccessor {
       throw new InvalidModificationError(this.name, fullPath, e);
     }
   }
-
-  // #endregion Protected Methods (4)
 }
