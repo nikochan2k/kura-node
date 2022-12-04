@@ -60,7 +60,7 @@
     "typescript": "^4.3.5"
   },
   "dependencies": {
-    "kura": "^0.4.32",
+    "kura": "^0.4.38",
     "request": "^2.88.2",
     "tslib": "^2.3.1"
   }
