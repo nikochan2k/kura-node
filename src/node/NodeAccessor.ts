@@ -122,8 +122,8 @@ export class NodeAccessor extends AbstractAccessor {
     return objects;
   }
 
-  public async doMakeDirectory(obj: FileSystemObject) {
-    const path = this.getPath(obj.fullPath);
+  public async doMakeDirectory(fullPath: string) {
+    const path = this.getPath(fullPath);
     try {
       mkdirSync(path);
     } catch (e) {
@@ -131,7 +131,7 @@ export class NodeAccessor extends AbstractAccessor {
         statSync(path); // Already exists
         return;
       } catch {}
-      throw new InvalidModificationError(this.name, obj.fullPath, e);
+      throw new InvalidModificationError(this.name, fullPath, e);
     }
   }
 
