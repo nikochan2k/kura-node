@@ -79,18 +79,6 @@ export class NodeTransferer extends Transferer {
           });
           writable.on("response", (resp) => {
             if (resp.statusCode === 200) {
-              toAccessor
-                .saveRecord(toObj.fullPath, fromObj.lastModified, fromObj.size)
-                .then(() => resolve())
-                .catch((e) =>
-                  reject(
-                    new InvalidModificationError(
-                      toAccessor.name,
-                      toObj.fullPath,
-                      e
-                    )
-                  )
-                );
               resolve();
             } else {
               reject(
