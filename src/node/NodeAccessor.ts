@@ -38,6 +38,7 @@ export class NodeAccessor extends AbstractAccessor {
     this.name = rootDir;
   }
 
+  // eslint-disable-next-line @typescript-eslint/require-await
   public async doDelete(fullPath: string, isFile: boolean) {
     const path = this.getPath(fullPath);
     try {
@@ -55,6 +56,7 @@ export class NodeAccessor extends AbstractAccessor {
     }
   }
 
+  // eslint-disable-next-line @typescript-eslint/require-await
   public async doGetObject(
     fullPath: string,
     _isFile: boolean
@@ -77,6 +79,7 @@ export class NodeAccessor extends AbstractAccessor {
     }
   }
 
+  // eslint-disable-next-line @typescript-eslint/require-await
   public async doGetObjects(dirPath: string): Promise<FileSystemObject[]> {
     const readdirPath = this.getPath(dirPath);
     let names: string[];
@@ -125,6 +128,7 @@ export class NodeAccessor extends AbstractAccessor {
     return objects;
   }
 
+  // eslint-disable-next-line @typescript-eslint/require-await
   public async doMakeDirectory(fullPath: string) {
     const path = this.getPath(fullPath);
     try {
@@ -133,11 +137,14 @@ export class NodeAccessor extends AbstractAccessor {
       try {
         statSync(path); // Already exists
         return;
-      } catch {}
+      } catch {
+        // noop
+      }
       throw new InvalidModificationError(this.name, fullPath, e);
     }
   }
 
+  // eslint-disable-next-line @typescript-eslint/require-await
   public async doReadContent(
     fullPath: string
   ): Promise<Blob | ArrayBuffer | string> {
@@ -160,6 +167,7 @@ export class NodeAccessor extends AbstractAccessor {
     return path;
   }
 
+  // eslint-disable-next-line @typescript-eslint/require-await
   public async getURL(
     fullPath: string,
     method?: "GET" | "POST" | "PUT" | "DELETE"
@@ -169,6 +177,7 @@ export class NodeAccessor extends AbstractAccessor {
     return url;
   }
 
+  // eslint-disable-next-line @typescript-eslint/require-await
   protected async doWriteArrayBuffer(
     fullPath: string,
     buffer: ArrayBuffer
@@ -198,6 +207,7 @@ export class NodeAccessor extends AbstractAccessor {
     await this.doWriteArrayBuffer(fullPath, buffer);
   }
 
+  // eslint-disable-next-line @typescript-eslint/require-await
   protected async doWriteBuffer(fullPath: string, buffer: Buffer) {
     const path = this.getPath(fullPath);
     try {

@@ -2,6 +2,7 @@ import { AbstractAccessor, AbstractLocalFileSystem } from "kura";
 import { FileSystemOptions } from "kura/lib/FileSystemOptions";
 import { NodeAccessor } from "./NodeAccessor";
 
+/* eslint-disable */
 const globalVar =
   typeof window !== "undefined"
     ? window
@@ -14,6 +15,7 @@ if (!globalVar.setTimeout || !globalVar.clearTimeout) {
   globalVar.clearTimeout = timers.clearTimeout;
   globalVar.setTimeout = timers.setTimeout;
 }
+/* eslint-enable */
 
 export class NodeLocalFileSystem extends AbstractLocalFileSystem {
   private rootDir: string;

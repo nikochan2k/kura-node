@@ -44,60 +44,65 @@ export class NodeTransferer extends Transferer {
 
     const fromUrl = await fromAccessor.getURL(fromObj.fullPath, "GET");
     if (fromUrl && toUrl) {
-      await new Promise<void>(async (resolve, reject) => {
-        let readable: Readable | Request;
-        let writable: Writable | Request;
-        if (fromUrl.startsWith("file:")) {
-          const fromPath = fileURLToPath(fromUrl);
-          readable = createReadStream(fromPath);
-        } else {
-          readable = get(fromUrl, {
-            timeout: this.options.timeout,
-          });
-        }
-        readable.on("error", (e) => {
-          const err = e as NodeJS.ErrnoException;
-          if (err.code === "ENOENT") {
-            reject(new NotFoundError(fromAccessor.name, fromObj.fullPath, e));
-            return;
+      await new Promise<void>((resolve, reject) => {
+        void (async () => {
+          let readable: Readable | Request;
+          let writable: Writable | Request;
+          if (fromUrl.startsWith("file:")) {
+            const fromPath = fileURLToPath(fromUrl);
+            readable = createReadStream(fromPath);
+          } else {
+            readable = get(fromUrl, {
+              timeout: this.options.timeout,
+            });
           }
-          reject(new NotReadableError(fromAccessor.name, fromObj.fullPath, e));
-        });
-
-        if (toUrl.startsWith("file:")) {
-          const toPath = fileURLToPath(toUrl);
-          writable = createWriteStream(toPath);
-          writable.on("finish", () => resolve());
-        } else {
-          const fullPath = toObj.fullPath;
-          const toUrlPut = await toAccessor.getURL(fullPath, "PUT");
-          writable = put(toUrlPut, {
-            timeout: this.options.timeout,
-            headers: {
-              "Content-Length": toObj.size,
-            },
-          });
-          writable.on("response", (resp) => {
-            if (resp.statusCode === 200) {
-              resolve();
-            } else {
-              reject(
-                new InvalidModificationError(
-                  toAccessor.name,
-                  toObj.fullPath,
-                  resp.statusCode + ": " + resp.statusMessage
-                )
-              );
+          readable.on("error", (e) => {
+            const err = e as NodeJS.ErrnoException;
+            if (err.code === "ENOENT") {
+              reject(new NotFoundError(fromAccessor.name, fromObj.fullPath, e));
+              return;
             }
+            reject(
+              new NotReadableError(fromAccessor.name, fromObj.fullPath, e)
+            );
           });
-        }
-        writable.on("error", (e) =>
-          reject(
-            new InvalidModificationError(toAccessor.name, toObj.fullPath, e)
-          )
-        );
 
-        readable.pipe(writable);
+          if (toUrl.startsWith("file:")) {
+            const toPath = fileURLToPath(toUrl);
+            writable = createWriteStream(toPath);
+            writable.on("finish", () => resolve());
+          } else {
+            const fullPath = toObj.fullPath;
+            const toUrlPut = await toAccessor.getURL(fullPath, "PUT");
+            writable = put(toUrlPut, {
+              timeout: this.options.timeout,
+              headers: {
+                "Content-Length": toObj.size,
+              },
+            });
+            writable.on("response", (resp) => {
+              if (resp.statusCode === 200) {
+                resolve();
+              } else {
+                reject(
+                  new InvalidModificationError(
+                    toAccessor.name,
+                    toObj.fullPath,
+                    // eslint-disable-next-line @typescript-eslint/restrict-plus-operands
+                    resp.statusCode + ": " + resp.statusMessage
+                  )
+                );
+              }
+            });
+          }
+          writable.on("error", (e) =>
+            reject(
+              new InvalidModificationError(toAccessor.name, toObj.fullPath, e)
+            )
+          );
+
+          readable.pipe(writable);
+        })();
       });
     } else {
       await super.transfer(fromAccessor, fromObj, toAccessor, toObj);
