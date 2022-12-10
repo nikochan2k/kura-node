@@ -55,7 +55,10 @@ export class NodeAccessor extends AbstractAccessor {
     }
   }
 
-  public async doGetObject(fullPath: string): Promise<FileSystemObject> {
+  public async doGetObject(
+    fullPath: string,
+    _isFile: boolean
+  ): Promise<FileSystemObject> {
     const path = this.getPath(fullPath);
     try {
       const stats = statSync(path);
